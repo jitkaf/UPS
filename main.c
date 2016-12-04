@@ -7,16 +7,15 @@
 #include <stdlib.h>
 // kvuli iotctl
 #include <sys/ioctl.h>
-//#include "zpravy.h"
+#include "konstanty.h"
 #include "tcp_server.h"
 #include "klient.h"
 #include "klienti.h"
 #include "zpracovavac_zprav.h"
+#include "globalni_promenne.h"
 
-#define maxKlientu 10
-#define  maxDelkaJmena 10
-#define  DELKA_ZPRAVY 255
-int pocet= 0;
+
+
 
 
 int vyhodnotZpravu(){
@@ -42,7 +41,7 @@ int main (void){
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
     memset(&my_addr, 0, sizeof(struct sockaddr_in));
-    int port = 20001;
+
     my_addr.sin_family = AF_INET;
     my_addr.sin_port = htons(port);
     my_addr.sin_addr.s_addr = INADDR_ANY;
@@ -95,8 +94,8 @@ int main (void){
                         
                         jmeno_hrace="nove";
                         
-                        klienti =  klienti_pridej_klienta(fd,jmeno_hrace, klienti, pocet); //ZDE NEJDE!!!
-                        pocet++;
+                        klienti =  klienti_pridej_klienta(client_socket,jmeno_hrace, klienti); //ZDE NEJDE!!!
+                        GLOBAL_pocet++;
                         printf("Pripojen novy klient a pridan do sady socketu\n");
                     }
                     // je to klientsky socket ? prijmem data
@@ -107,7 +106,7 @@ int main (void){
                         if (a2read > 0){
                            read(fd,zprava , a2read);
                             printf("Prijato %s od klienta  -- %d --\n",zprava, fd);
-                            pocet = zpracovavac_zprav_vyhodnot_zpravu(fd, zprava, a2read, klienti);
+                            zpracovavac_zprav_vyhodnot_zpravu(fd, zprava, a2read, klienti);
                            // tcp_server_send_message(fd,zprava,a2read );
                         }
                         // na socketu se stalo neco spatneho

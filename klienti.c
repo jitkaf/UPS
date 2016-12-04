@@ -3,14 +3,14 @@
 #include <string.h>
 #include "klient.h"
 #include "klienti.h"
-
+#include "globalni_promenne.h"
 
 int funkce (){
     return 0;
 }
-int klienti_vrat_fd_klienta(struct klient* klienti, char* jmeno_hrace, int pocet){
+int klienti_vrat_fd_klienta(struct klient* klienti, char* jmeno_hrace){
     int fd;
-    int navrat=klienti_vrat_id_klienta(klienti, jmeno_hrace, pocet);
+    int navrat=klienti_vrat_id_klienta(klienti, jmeno_hrace);
     if (navrat == -1) {
         return navrat;
     }
@@ -21,9 +21,9 @@ int klienti_vrat_fd_klienta(struct klient* klienti, char* jmeno_hrace, int pocet
     return 5;
 }
 
-int klienti_vrat_id_klienta(struct klient* klienti, char* jmeno_hrace, int pocet){
+int klienti_vrat_id_klienta(struct klient* klienti, char* jmeno_hrace){
    int i;
-    for(i=0; i<pocet; i++){
+    for(i=0; i<GLOBAL_pocet; i++){
         if (strcmp((klienti+i)->jmeno_hrace, jmeno_hrace) == 0){
             printf("POROVNAVANI %d \n",  i);
             return i;
@@ -34,24 +34,24 @@ int klienti_vrat_id_klienta(struct klient* klienti, char* jmeno_hrace, int pocet
     
 }
 
-struct klient* klienti_pridej_klienta(int fd, char* jmeno_hrace, struct klient* klienti, int pocet ){
+struct klient* klienti_pridej_klienta(int fd, char* jmeno_hrace, struct klient* klienti ){
   //  (klienti+pocet)  = klient_vytvor_klienta(fd, jmeno_hrace);
-    memcpy(klienti + pocet, klient_vytvor_klienta(fd, jmeno_hrace), sizeof(struct klient));
+    memcpy(klienti + GLOBAL_pocet, klient_vytvor_klienta(fd, jmeno_hrace), sizeof(struct klient));
     return klienti;
    
 }
 
-struct klient* klienti_odeber_klienta(int id, struct klient* klienti, int pocet){
+struct klient* klienti_odeber_klienta(int id, struct klient* klienti){
     int i;
-    for(i=id; i <pocet-1; i++){
+    for(i=id; i <GLOBAL_pocet-1; i++){
         memcpy(klienti + i, klienti + i +1, sizeof(struct klient));
     }
     return klienti;
 }
 
-int klienti_zkus_znovu_propojeni(int fd, int id, struct klient * klienti, char *jmeno_hrace, int pocet){
-   
-    if ((id<pocet)&&(klienti[id].pripojen == 0) && (strcmp(klienti[id].jmeno_hrace, jmeno_hrace) == 0)){
+int klienti_zkus_znovu_propojeni(int fd, int id, struct klient * klienti, char *jmeno_hrace){
+    printf("zde \n");
+    if ((id<GLOBAL_pocet)&&(klienti[id].pripojen == 0) && (strcmp(klienti[id].jmeno_hrace, jmeno_hrace) == 0)){
         //pripojuji ztraceneho hrace
         (klienti +id)->doba_necinosti = 0;
         (klienti + id)->pripojen = 1;
