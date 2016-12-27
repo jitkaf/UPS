@@ -17,7 +17,6 @@
 
 
 
-
 int vyhodnotZpravu(){
 
 }
@@ -26,7 +25,6 @@ klient *pole_klientu = malloc(sizeof(klient) * M) kde M je libovolný přirozen�
 a potom když chceš získat klienta N, což je přirozený číslo v rozsahu <0; M), děláš to takhle:
 klient *muj_klient = pole_klientu + N;*/
 int main (void){
-    int a = metoda();
     int server_socket;
     int client_socket, fd;
     int return_value;
@@ -36,17 +34,17 @@ int main (void){
     int a2read;
     struct sockaddr_in my_addr, peer_addr;
     fd_set client_socks, tests;
-    klient* klienti = malloc(sizeof(klient) * maxKlientu);
-    char * jmeno_hrace = malloc(maxDelkaJmena);
+    globalni_promenne_inicializace();
+    char * jmeno_hrace = malloc(MAX_DELKA_JMENA);
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
     memset(&my_addr, 0, sizeof(struct sockaddr_in));
 
     my_addr.sin_family = AF_INET;
-    my_addr.sin_port = htons(port);
+    my_addr.sin_port = htons(PORT);
     my_addr.sin_addr.s_addr = INADDR_ANY;
 
-    printf("Binding port %05d ...", port);
+    printf("Binding port %05d ...", PORT);
     return_value = bind(server_socket, (struct sockaddr *) &my_addr, sizeof(struct sockaddr_in));
     
     if (return_value == 0)
@@ -94,7 +92,7 @@ int main (void){
                         
                         jmeno_hrace="nove";
                         
-                        klienti =  klienti_pridej_klienta(client_socket,jmeno_hrace, klienti); //ZDE NEJDE!!!
+                        klienti_pridej_klienta(client_socket,jmeno_hrace); //ZDE NEJDE!!!
                         GLOBAL_pocet++;
                         printf("Pripojen novy klient a pridan do sady socketu\n");
                     }
@@ -106,13 +104,15 @@ int main (void){
                         if (a2read > 0){
                            read(fd,zprava , a2read);
                             printf("Prijato %s od klienta  -- %d --\n",zprava, fd);
-                            zpracovavac_zprav_vyhodnot_zpravu(fd, zprava, a2read, klienti);
+                            zpracovavac_zprav_vyhodnot_zpravu(fd, zprava, a2read);
                            // tcp_server_send_message(fd,zprava,a2read );
                         }
                         // na socketu se stalo neco spatneho
                         else {
                             close(fd);
                             FD_CLR( fd, &client_socks );
+                            int id =klienti_vrat_id_klienta_fd(fd);
+                            klienti_odeber_klienta(id);
                             printf("Klient se odpojil a byl odebran ze sady socketu\n");
                         }
                     }

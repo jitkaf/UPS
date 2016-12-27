@@ -6,6 +6,7 @@ struct klient
 {
     int fd;
     char* jmeno_hrace;
+    int heslo;
     int doba_necinosti;
     int herni_mistnost;
     int skore;
@@ -21,6 +22,7 @@ int klient_prirad_herni_mistnost(struct klient hrac, int mistnost);
 int klient_odeber_herni_misnost(struct klient hrac);
 int klient_odpoj(struct klient hrac);
 int klient_pripoj(struct klient hrac);
+int klient_generuj_heslo();
 
 
 #endif

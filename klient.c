@@ -6,11 +6,11 @@
 struct klient *klient_vytvor_klienta(int fd, char * jmeno_hrace){
     klient* kli = (klient*) malloc(sizeof(klient));
     kli->doba_necinosti=0;
-  
     kli->fd = fd;
     kli->herni_mistnost=-1;
     kli->jmeno_hrace = malloc(sizeof(10));
     kli->jmeno_hrace = jmeno_hrace;
+    kli->heslo = klient_generuj_heslo();
     kli->skore = 0;
     kli->kolo = 0;
     kli->pripojen = 1;
@@ -22,18 +22,23 @@ int metoda(){
 }
 int klient_vynuluj_dobu_necinosti(struct klient hrac){
     hrac.doba_necinosti = 0;
+    return 0 ;
 }
 int klient_inkrementuj_dobu_necinosti(struct klient hrac){
     hrac.doba_necinosti++;
+    return 0;
 }
 int klient_prirad_herni_mistnost(struct klient hrac, int mistnost){
     hrac.herni_mistnost = mistnost;
+    return 0;
 }
 int klient_odeber_herni_misnost(struct klient hrac){
     hrac.herni_mistnost = -1;
+    return 0;
 }
 int klient_odpoj(struct klient hrac){
     hrac.pripojen = 0;
+    return 0;
 }
 
 
@@ -41,4 +46,11 @@ int klient_pripoj(struct klient hrac){
     hrac.doba_necinosti = 0;
     hrac.pripojen = 1;
     
+    return 0;
+}
+
+int klient_generuj_heslo(){
+    //bude vylepseno :)
+  
+    return 5;
 }

@@ -14,9 +14,16 @@
 #ifndef KONSTANTY_H
 #define KONSTANTY_H
 
-#define maxKlientu 10
-#define  maxDelkaJmena 10
+#define MAX_KLIENTU 10
+#define MAX_HER 10
+#define  MAX_DELKA_JMENA 10
 #define  DELKA_ZPRAVY 255
-#define port 20001
+#define PORT 20001
+
+
+#define PRAZDNA_HRA 0;
+#define CEKA_NA_PRIPOJENI_Hrace 1;
+#define HRAJE_SE 2;
+#define DOHRANO 3;
 
 #endif /* KONSTANTY_H */

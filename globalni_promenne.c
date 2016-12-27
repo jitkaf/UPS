@@ -11,10 +11,22 @@
  * Created on 2. prosince 2016, 10:25
  */
 
+
+
+#include "konstanty.h"
+#include "klient.h"
+#include "hry.h"
+#include "hra.h"
+#include "klienti.h"
 #include "globalni_promenne.h"
+#include <stdio.h>
+#include <string.h>
 
-
-globalni_promenne_inicializace(){
-    GLOBAL_pocet = 0;
-    GLOBAL_klienti=  malloc(sizeof(klient) * maxKlientu);
+int globalni_promenne_inicializace(){
+     GLOBAL_pocet = 0;
+    //GLOBAL_klienti=  malloc(sizeof(klient) * maxKlientu);
+     GLOBAL_klienti = ( klient*)malloc(sizeof(klient) * MAX_KLIENTU);
+     GLOBAL_hry = (hra*)malloc(sizeof(hra) * MAX_HER);
+     
+     return 0;
 }

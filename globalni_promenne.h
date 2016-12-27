@@ -14,14 +14,16 @@
 #ifndef GLOBALNI_PROMENNE_H
 #define GLOBALNI_PROMENNE_H
 
-#include "konstanty.h"
 
 
 
 int GLOBAL_pocet;
-klient GLOBAL_klienti[maxKlientu];
+//klient GLOBAL_klienti[maxKlientu];
 
-globalni_promenne_inicializace();
+struct hra * GLOBAL_hry;
+struct klient * GLOBAL_klienti; 
+
+int globalni_promenne_inicializace();
 
 
 

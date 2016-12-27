@@ -7,23 +7,23 @@
 #include <stdio.h>
 #include <string.h>
 //identifikator_sluzby|sve_id|sve_jmeno|zprava    : c|cc|zzzzzzzzzz|zzzzzzzzz......
-int zpracovavac_zprav_vyhodnot_zpravu(int fd, char * msg, struct klient* klienti){
+int zpracovavac_zprav_vyhodnot_zpravu(int fd, char * msg, int delka){
    int pom;
     switch (msg[0]){
         case '1':  //pripojovani ztraceneho klienta
             if(msg[1]=='|'){
                 printf("jdu na to");
-                zpracovavac_zprav_pokus_opetovne_pripojeni(fd, msg, klienti);
+                zpracovavac_zprav_pokus_opetovne_pripojeni(fd, msg);
             }
             break;
         case '2': 
             if(msg[1]=='|'){
-                zpracovavac_zprav_posli_zpet(fd, msg, klienti) ;
+                zpracovavac_zprav_posli_zpet(fd, msg) ;
             }
             break;
         case '3': //broadcast
             if (msg[1]=='|'){
-                zpracovavac_zprav_posli_vsem(fd, msg, klienti);
+                zpracovavac_zprav_posli_vsem(fd, msg);
             }
             break;
         case '4': //odpojit klienta
@@ -38,9 +38,9 @@ int zpracovavac_zprav_vyhodnot_zpravu(int fd, char * msg, struct klient* klienti
 }
 
 //identifikator_sluzby|sve_id|sve_jmeno|zprava    : c|cc|zzzzzzzzzz|zzzzzzzzz......
-    zpracovavac_zprav_pokus_opetovne_pripojeni(int fd, char *msg, struct klient* klienti){
+    int zpracovavac_zprav_pokus_opetovne_pripojeni(int fd, char *msg){
     printf("zacatek metody");
-    char *cislo =malloc(2);
+    char *cislo =(char*)malloc(2);
     memcpy(cislo, msg+2, 2);
 
     printf("cislo je: %s", cislo);
@@ -49,13 +49,13 @@ int zpracovavac_zprav_vyhodnot_zpravu(int fd, char * msg, struct klient* klienti
     char *jmeno_hrace = malloc(10);
     memcpy(jmeno_hrace, msg+5, 10);
    
-    pom = klienti_zkus_znovu_propojeni(fd, id, klienti, jmeno_hrace);
+    pom = klienti_zkus_znovu_propojeni(fd, id, jmeno_hrace);
     if (pom == 0){
         tcp_server_send_message(fd, "Klient znovu pripojen, id = " + id, 0);
        
     }
     else{
-        klienti_pridej_klienta(fd, jmeno_hrace, klienti);
+        klienti_pridej_klienta(fd, jmeno_hrace);
         if (pom == -1){
             char *zprava = malloc(20);
             zprava="nezdarilo se ";
@@ -66,7 +66,7 @@ int zpracovavac_zprav_vyhodnot_zpravu(int fd, char * msg, struct klient* klienti
             char zprava[20];
             memcpy(zprava, "efwfw", 5);
          //   zprava="Klient vytvoren.";
-            zprava[5]='\0';
+          //  zprava[5]='\0';
             
             tcp_server_send_message(fd, zprava, 1);
         }
@@ -76,7 +76,7 @@ int zpracovavac_zprav_vyhodnot_zpravu(int fd, char * msg, struct klient* klienti
 }
 
                                                    
-int zpracovavac_zprav_posli_zpet(int fd, char *msg, struct klient * klienti){
+int zpracovavac_zprav_posli_zpet(int fd, char *msg){
     int delka = strlen(msg);
     printf("v metode prijata yprava je %s \n", msg);
     int vel = delka-15;
@@ -87,7 +87,7 @@ int zpracovavac_zprav_posli_zpet(int fd, char *msg, struct klient * klienti){
     return 0;
 }
 
-int zpracovavac_zprav_posli_vsem(int fd, char *msg, struct klient *klienti){
+int zpracovavac_zprav_posli_vsem(int fd, char *msg){
     int delka = strlen(msg);
     int i  ;
     int vel = delka-15;
@@ -96,8 +96,8 @@ int zpracovavac_zprav_posli_vsem(int fd, char *msg, struct klient *klienti){
     //printf("-----------cislo------- %d \n", pocet);
     for (i=0; i<GLOBAL_pocet; i++){
         printf("posilam a i je %d", i);
-        if((klienti + i)->pripojen == 1){
-             tcp_server_send_message((klienti + i)->fd, zprava2, 1);
+        if((GLOBAL_klienti + i)->pripojen == 1){
+             tcp_server_send_message((GLOBAL_klienti + i)->fd, zprava2, 1);
         }
     }
    // free(zprava2);

@@ -15,12 +15,12 @@
 #define ZPRACOVAVAC_ZPRAV_H
 
 
-int zpracovavac_zprav_vyhodnot_zpravu(int fd, char * msg, struct klient* klienti);
+int zpracovavac_zprav_vyhodnot_zpravu(int fd, char * msg, int delka);
 
-int zpracovavac_zprav_pokus_opetovne_pripojeni(int fd, char *msg,  struct klient* klienti);
+int zpracovavac_zprav_pokus_opetovne_pripojeni(int fd, char *msg);
 
-int zpracovavac_zprav_posli_zpet(int fd, char *msg, struct klient * klienti);
+int zpracovavac_zprav_posli_zpet(int fd, char *msg);
 
-int zpracovavac_zprav_posli_vsem(int fd, char *msg, struct klient *klienti);
+int zpracovavac_zprav_posli_vsem(int fd, char *msg);
 
 #endif /* ZPRACOVAVAC_ZPRAV_H */
