@@ -10,10 +10,10 @@
  * 
  * Created on 18. prosince 2016, 18:35
  */
+#include "hry.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "hry.h"
 #include "konstanty.h"
 #include "globalni_promenne.h"
 #include "hra.h"

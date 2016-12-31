@@ -16,7 +16,7 @@
 
 
 typedef
-struct hra
+struct s_hra
 {
     int id_hrac_jedna;
     int id_hrac_dva;
@@ -24,12 +24,13 @@ struct hra
     int score_hrac_jedna;
     int score_hrac_dva;
     int stav;
+    int vlakno;
     
-} hra;
+} s_hra;
 
-int hra_vyrezetuj_hru(int id_hry);
+int hra_vyrezetuj_hru(struct s_hra hra);
 
-int hra_vyhodnot_odpoved(int id_hry, int odpoved, int spravna_odpoved);
+int hra_vyhodnot_odpoved(struct s_hra hra, int odpoved, int spravna_odpoved);
 
 
 

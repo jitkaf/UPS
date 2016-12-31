@@ -90,11 +90,15 @@ int main (void){
                       
                         FD_SET( client_socket, &client_socks );
                         
-                        jmeno_hrace="nove";
+                       // jmeno_hrace="nove"; //zde vytvorit nove vlakno pro nove pripojeneho
                         
-                        klienti_pridej_klienta(client_socket,jmeno_hrace); //ZDE NEJDE!!!
+                        
+                        klienti_pridej_klienta(client_socket); 
+                        char * zp = malloc(1);
+                        zp = "a";
+                        tcp_server_send_message(client_socket, zp, strlen(zp));
                         GLOBAL_pocet++;
-                        printf("Pripojen novy klient a pridan do sady socketu\n");
+                        printf("Pripojen novy klient (zatim neprihlasen) a pridan do sady socketu\n");
                     }
                     // je to klientsky socket ? prijmem data
                     else {
@@ -112,7 +116,13 @@ int main (void){
                             close(fd);
                             FD_CLR( fd, &client_socks );
                             int id =klienti_vrat_id_klienta_fd(fd);
-                            klienti_odeber_klienta(id);
+                            if ((GLOBAL_klienti + id )->stav_stavoveho_diagramu == 0){ //pokud je neregistrovanej uplne ho zahodim
+                                klienti_odeber_klienta(id);
+                                printf("Klient se odpojil a byl odebran ze sady socketu- uplne vymazan\n");
+                            }else{
+                               klienti_odhlas_klienta(id); //pokud uz je zaregistrovanej zustane tu v pameti
+                               printf("Klient se odpojil a byl odebran ze sady socketu - zustal v pameti jako odhlaseny \n");
+                            }
                             printf("Klient se odpojil a byl odebran ze sady socketu\n");
                         }
                     }

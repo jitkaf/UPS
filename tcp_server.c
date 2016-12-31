@@ -1,7 +1,8 @@
 
+#include "tcp_server.h"
 #include <stdio.h>
 #include <string.h>
-#include "tcp_server.h"
+#include <stdlib.h>
 
 
 int tcp_server_send_message(int fd, char * poslat, int length){
@@ -11,7 +12,7 @@ int tcp_server_send_message(int fd, char * poslat, int length){
     memset(&msg, 0,a2write + 2);*/
     char *msg=(char*)malloc(a2write +1);
     memcpy(msg, poslat, a2write);
-   printf("Odesilam zpravu: %s na fd %d \n" , msg, fd );
+   printf(" \n hhh  Odesilam zpravu: %s na fd %d \n" , msg, fd );
   
    printf("delka %d", a2write);
   //msg[a2write] ='\n';

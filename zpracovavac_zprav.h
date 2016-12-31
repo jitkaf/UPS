@@ -14,8 +14,27 @@
 #ifndef ZPRACOVAVAC_ZPRAV_H
 #define ZPRACOVAVAC_ZPRAV_H
 
+struct s_zprava{
+    char *prvni_cast;
+    char *druha_cast;
+    char *treti_cast;
+    int q;
+}s_zprava;
 
 int zpracovavac_zprav_vyhodnot_zpravu(int fd, char * msg, int delka);
+
+struct s_zprava *zpracovavac_zprav_parser(char * msg, int delka);
+
+int zpracovavac_zprav_registrace(int fd, struct s_zprava * p_zprava);
+
+int zpracovavac_zprav_znovu_pripojeni(int fd,struct s_zprava *p_zprava);
+
+int zpracovavac_zprav_start(int fd,struct s_zprava *p_zprava) ;
+
+int zpracovavac_zprav_odpoved(int fd,struct s_zprava *p_zprava);
+
+int zpracovavac_zprav_odpoj(int fd,struct s_zprava *p_zprava);
+
 
 int zpracovavac_zprav_pokus_opetovne_pripojeni(int fd, char *msg);
 
