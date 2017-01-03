@@ -76,7 +76,7 @@ int klienti_vrat_id_klienta_fd(int fd){
 int klienti_pridej_klienta(int fd){
   //  (klienti+pocet)  = klient_vytvor_klienta(fd, jmeno_hrace);
     //kam, co , kolik
-     printf(            "\n\n\n\n ---------------------\n  %d \n -------------\n\n\n", (klient_vytvor_klienta(fd))->fd          );
+     printf(  "\n\n\n\n ---------------------\n  %d \n -------------\n\n\n", (klient_vytvor_klienta(fd))->fd   );
     memcpy((GLOBAL_klienti + GLOBAL_pocet), klient_vytvor_klienta(fd), sizeof(struct klient)+1);
     printf("pridan hrac na pozici %d", GLOBAL_pocet );
      printf(            "\n\n\n\n ---------------------\n  %d \n -------------\n\n\n", (klient_vytvor_klienta(fd))->fd          );

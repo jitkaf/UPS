@@ -15,13 +15,20 @@ int zpracovavac_zprav_vyhodnot_zpravu(int fd, char * msg, int delka){
   struct s_zprava *p_zprava = malloc(sizeof(s_zprava));
    memcpy( p_zprava, zpracovavac_zprav_parser( msg,delka),sizeof(struct s_zprava)+1);
   
-  printf("\n\n  %s   \n", p_zprava->prvni_cast);
-  if (strcmp(p_zprava->prvni_cast, "0") == 0 ){
+  printf("\n\n  -%s-   \n", p_zprava->prvni_cast);
+  printf("\n -0-    %d   %d", sizeof(p_zprava->prvni_cast), 1);
+  int nula =strcmp(p_zprava->prvni_cast, "0");
+  int jedna=strcmp(p_zprava->prvni_cast, "1");
+  
+  
+  if (nula==0){
       //zadost o registraci  overit ze je jmeno volne
+      printf("jej");
       zpracovavac_zprav_registrace(fd, p_zprava);
      
   }
-  else if (strcmp(p_zprava->prvni_cast, "1") == 0 ){
+  printf("\n\n ne \n");
+  /*else if (strcmp(p_zprava->prvni_cast, "1") == 0 ){
       //zadost o znovu pripojeni - overit jestli je klient ve stavu 5 
       zpracovavac_zprav_znovu_pripojeni( fd, p_zprava);
   }
@@ -31,7 +38,7 @@ int zpracovavac_zprav_vyhodnot_zpravu(int fd, char * msg, int delka){
       
   }
   else if (strcmp(p_zprava->prvni_cast, "3") == 0 ){
-      //chce odpovedet na otazku, overit zda je ve stavu 3  
+      //chce odpovedet na otazku, overit zda je ve stavu 3  2
       zpracovavac_zprav_odpoved(fd, p_zprava);
       
   }
@@ -43,7 +50,7 @@ int zpracovavac_zprav_vyhodnot_zpravu(int fd, char * msg, int delka){
   else if (strcmp(p_zprava->prvni_cast, "5") == 0 ){
       //chce prejit z 5 do 1, overit zda je v 5
       
-  }
+  }*/
    /*
     switch (msg[0]){
         case '1':  //pripojovani ztraceneho klienta
@@ -87,7 +94,7 @@ int zpracovavac_zprav_vyhodnot_zpravu(int fd, char * msg, int delka){
 struct s_zprava* zpracovavac_zprav_parser( char * msg, int delka){
     printf("jsem v parseru se zpravou: %s o delce: %d \n", msg, delka);
     // klient* kli = (klient*) malloc(sizeof(klient));
-    struct s_zprava * p_zpr =malloc(sizeof(s_zprava));
+    struct s_zprava * p_zpr =calloc(1,sizeof(s_zprava));
     int i=0;
     int j=0;
     while ((i<delka-1)&&(msg[i]!='|')){
@@ -95,16 +102,17 @@ struct s_zprava* zpracovavac_zprav_parser( char * msg, int delka){
         //printf("icko je %d \n", i);
     }
     if (i==0){
-        p_zpr->prvni_cast = malloc(1);
+        p_zpr->prvni_cast = calloc(1,sizeof(char));
         p_zpr->prvni_cast = "-";
-        p_zpr->druha_cast = malloc(1);
+        p_zpr->druha_cast = calloc(1,1);
         p_zpr->druha_cast = "-";
-        p_zpr->treti_cast = malloc(1);
+        p_zpr->treti_cast = calloc(1,1);
         p_zpr->treti_cast = "-";
     }
     else {
       //  printf("jej\n" );
-        p_zpr->prvni_cast = malloc(sizeof(char)*i);
+        p_zpr->prvni_cast = calloc((i+1),sizeof(char));
+        printf("icko je: %d \n" , i);
         memcpy(p_zpr->prvni_cast,msg, i);
       //  printf("prvni cas prijate zpravy je: %s \n", p_zprava->prvni_cast);
         i++;
@@ -116,9 +124,9 @@ struct s_zprava* zpracovavac_zprav_parser( char * msg, int delka){
            // printf("icko dva je %d \n", i);
         }
          if (i==j){
-            p_zpr->druha_cast = malloc(1);
+            p_zpr->druha_cast = calloc(1,1);
             p_zpr->druha_cast = "-";
-            p_zpr->treti_cast = malloc(1);
+            p_zpr->treti_cast = calloc(1,1);
             p_zpr->treti_cast = "-";
         }
         else {
@@ -151,6 +159,7 @@ struct s_zprava* zpracovavac_zprav_parser( char * msg, int delka){
 }
 
 int zpracovavac_zprav_registrace(int fd, struct s_zprava * p_zprava){
+    printf("zpracovavac_zprav_registrace");
       if(strcmp(p_zprava->druha_cast, "-") == 0 ){
           //poslat jmeno nezadano
           tcp_server_send_message(fd, "0|1", 3 );
@@ -166,6 +175,7 @@ int zpracovavac_zprav_registrace(int fd, struct s_zprava * p_zprava){
              return -1;
          } 
          else if (globalni_promenne_pridej_jmeno(p_zprava->druha_cast) == -1){
+             printf("kuk");
                tcp_server_send_message(fd, "0|3", 3 );
          
          }

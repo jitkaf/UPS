@@ -25,6 +25,10 @@ klient *pole_klientu = malloc(sizeof(klient) * M) kde M je libovolný přirozen�
 a potom když chceš získat klienta N, což je přirozený číslo v rozsahu <0; M), děláš to takhle:
 klient *muj_klient = pole_klientu + N;*/
 int main (void){
+    
+    char *kk = malloc(2);
+    kk="ab\0";
+    printf(" vel  %d  %d %zd  %d  %d\n", sizeof("ab"), sizeof(char), strlen(kk), sizeof(&kk), sizeof(*kk));
     int server_socket;
     int client_socket, fd;
     int return_value;
@@ -44,7 +48,7 @@ int main (void){
     my_addr.sin_port = htons(PORT);
     my_addr.sin_addr.s_addr = INADDR_ANY;
 
-    printf("Binding port %05d ...", PORT);
+    printf("Binding port %05zd ...", PORT);
     return_value = bind(server_socket, (struct sockaddr *) &my_addr, sizeof(struct sockaddr_in));
     
     if (return_value == 0)

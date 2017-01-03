@@ -45,6 +45,7 @@ int globalni_promenne_inicializace(){
 
 int globalni_promenne_pridej_jmeno(char *jmeno){
     int x;
+    printf("jsem v int globalni_promenne_pridej_jmeno(char *jmeno) a jmeno je %s", jmeno);
   if(GLOBAL_p_prvni->jmeno == NULL){
       GLOBAL_p_prvni->jmeno = jmeno;
   }
