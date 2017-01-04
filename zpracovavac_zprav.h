@@ -23,7 +23,7 @@ struct s_zprava{
 
 int zpracovavac_zprav_vyhodnot_zpravu(int fd, char * msg, int delka);
 
-struct s_zprava *zpracovavac_zprav_parser(char * msg, int delka);
+int zpracovavac_zprav_parser(struct s_zprava *p_zprava, char * msg, int delka);
 
 int zpracovavac_zprav_registrace(int fd, struct s_zprava * p_zprava);
 

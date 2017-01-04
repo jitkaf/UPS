@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <pthread.h>
 
 int hra_vyrezetuj_hru(struct s_hra hra){
     //tady bude muset bejt nejakej zamek aby se to provedlo atomicky

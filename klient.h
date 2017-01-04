@@ -17,7 +17,7 @@ struct klient
 }klient;
 
 int metoda();
-struct klient *klient_vytvor_klienta(int fd);
+int klient_vytvor_klienta(struct klient *kli, int fd);
 
 int klient_vynuluj_dobu_necinosti(struct klient hrac);
 int klient_inkrementuj_dobu_necinosti(struct klient hrac);

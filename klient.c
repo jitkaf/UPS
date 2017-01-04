@@ -1,24 +1,25 @@
 #include "klient.h"
+#include "konstanty.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
- struct klient *klient_vytvor_klienta(int fd){
-    klient* kli = (klient*) malloc(sizeof(klient));
+ int klient_vytvor_klienta(struct klient *kli, int fd){
+    
     kli->doba_necinosti=0;
     kli->fd = fd;
     kli->herni_mistnost=-1;
-    kli->jmeno_hrace = malloc(sizeof(10));
-    kli->heslo = malloc(sizeof(10));
-    kli->jmeno_hrace =NULL;
-    kli->heslo = NULL;
+    kli->jmeno_hrace = calloc(MAX_DELKA_JMENA,1);
+    kli->heslo = calloc(MAX_DELKA_JMENA,1);
+  //  kli->jmeno_hrace =NULL;
+   // kli->heslo = NULL;
     kli->skore = 0;
     kli->kolo = 0;
     kli->odpoved = 0;
     kli->stav_stavoveho_diagramu=0;
     kli->zamek_odpovedi =0;
     printf("vytvarim hrace s zatim neznamym jmenemna s fd %d \n", fd);
-    return kli;
+    return 0;
 }
 
 

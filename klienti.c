@@ -62,7 +62,10 @@ int klienti_vrat_id_klienta(char* jmeno_hrace){
 
 int klienti_vrat_id_klienta_fd(int fd){
    int i;
+   printf("pocet %d \n", GLOBAL_pocet);
     for(i=0; i<GLOBAL_pocet; i++){
+        
+        printf("fd je %d \n", (GLOBAL_klienti + i)->fd);
         if ((GLOBAL_klienti+i)->fd == fd){
             printf("POROVNAVANI %d \n",  fd);
             return i;
@@ -76,10 +79,18 @@ int klienti_vrat_id_klienta_fd(int fd){
 int klienti_pridej_klienta(int fd){
   //  (klienti+pocet)  = klient_vytvor_klienta(fd, jmeno_hrace);
     //kam, co , kolik
-     printf(  "\n\n\n\n ---------------------\n  %d \n -------------\n\n\n", (klient_vytvor_klienta(fd))->fd   );
-    memcpy((GLOBAL_klienti + GLOBAL_pocet), klient_vytvor_klienta(fd), sizeof(struct klient)+1);
+    
+     klient s_kl;
+     klient *kli = &s_kl;
+     memset(kli, 0, sizeof(klient));
+     klient_vytvor_klienta(kli, fd);
+     
+     memcpy((GLOBAL_klienti + GLOBAL_pocet), kli, sizeof(struct klient));
+   
+    
+     GLOBAL_pocet++;
     printf("pridan hrac na pozici %d", GLOBAL_pocet );
-     printf(            "\n\n\n\n ---------------------\n  %d \n -------------\n\n\n", (klient_vytvor_klienta(fd))->fd          );
+    
     return 0;
    
 }
@@ -91,11 +102,14 @@ int klienti_odhlas_klienta(int id){
 
 int klienti_odeber_klienta(int id){
     int i;
+    globalni_promenne_odeber_jmeno((GLOBAL_klienti + id)->jmeno_hrace);
     for(i=id; i <GLOBAL_pocet-1; i++){
         //tady je asi chyba nebot zustane nekde ulozenej starej fd i po odpojeni*/
-        memcpy(GLOBAL_klienti + i, GLOBAL_klienti + i+1, sizeof(struct klient)+1);
+        memcpy(GLOBAL_klienti + i, GLOBAL_klienti + i+1, sizeof(struct klient));
         
     }
+   
+    //zde na toho posledniho zavolam free
     GLOBAL_pocet--;
     return 0;
 }

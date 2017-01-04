@@ -18,12 +18,16 @@
 #define MAX_HER 10
 #define  MAX_DELKA_JMENA 10
 #define  DELKA_ZPRAVY 255
+#define DELKA_ODPOVED 1
 #define PORT 20001
 
 
-#define PRAZDNA_HRA 0;
-#define CEKA_NA_PRIPOJENI_Hrace 1;
-#define HRAJE_SE 2;
-#define DOHRANO 3;
+#define PRAZDNA_HRA 0
+#define CEKA_NA_PRIPOJENI_Hrace 1
+#define HRAJE_SE 2
+#define DOHRANO 3
+
+
+#define PRAZDNE_JMENO 0
 
 #endif /* KONSTANTY_H */

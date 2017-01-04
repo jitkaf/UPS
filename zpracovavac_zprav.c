@@ -5,6 +5,7 @@
 #include "klient.h"
 #include "globalni_promenne.h"
 #include "hra.h"
+#include "konstanty.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -12,23 +13,22 @@
 int zpracovavac_zprav_vyhodnot_zpravu(int fd, char * msg, int delka){
    int pom;
    printf("jsem v zpracovavac_zprav_vyhodnot_zpravu se zpravou %s o delce %d \n", msg, delka) ;
-  struct s_zprava *p_zprava = malloc(sizeof(s_zprava));
-   memcpy( p_zprava, zpracovavac_zprav_parser( msg,delka),sizeof(struct s_zprava)+1);
+  //struct s_zprava *p_zprava = malloc(sizeof(s_zprava));
+   struct s_zprava zprava;
+   struct s_zprava *p_zprava = &zprava;
   
-  printf("\n\n  -%s-   \n", p_zprava->prvni_cast);
-  printf("\n -0-    %d   %d", sizeof(p_zprava->prvni_cast), 1);
-  int nula =strcmp(p_zprava->prvni_cast, "0");
-  int jedna=strcmp(p_zprava->prvni_cast, "1");
+  zpracovavac_zprav_parser(p_zprava, msg,delka);
+ //strcpy( p_zprava, zpracovavac_zprav_parser( msg,delka));
   
+
   
-  if (nula==0){
+  if (strcmp(p_zprava->prvni_cast, "0")==0){
       //zadost o registraci  overit ze je jmeno volne
-      printf("jej");
+      printf("jej 0 \n");
       zpracovavac_zprav_registrace(fd, p_zprava);
      
   }
-  printf("\n\n ne \n");
-  /*else if (strcmp(p_zprava->prvni_cast, "1") == 0 ){
+  else if (strcmp(p_zprava->prvni_cast, "1") == 0 ){
       //zadost o znovu pripojeni - overit jestli je klient ve stavu 5 
       zpracovavac_zprav_znovu_pripojeni( fd, p_zprava);
   }
@@ -43,6 +43,7 @@ int zpracovavac_zprav_vyhodnot_zpravu(int fd, char * msg, int delka){
       
   }
   else if (strcmp(p_zprava->prvni_cast, "4") == 0 ){
+      printf("kuk");
       //zadost o odpojeni, zkoumat zda uplne nebo jen odhlasit
       zpracovavac_zprav_odpoj(fd, p_zprava);
       
@@ -50,7 +51,7 @@ int zpracovavac_zprav_vyhodnot_zpravu(int fd, char * msg, int delka){
   else if (strcmp(p_zprava->prvni_cast, "5") == 0 ){
       //chce prejit z 5 do 1, overit zda je v 5
       
-  }*/
+  }
    /*
     switch (msg[0]){
         case '1':  //pripojovani ztraceneho klienta
@@ -91,10 +92,15 @@ int zpracovavac_zprav_vyhodnot_zpravu(int fd, char * msg, int delka){
 }
 
 
-struct s_zprava* zpracovavac_zprav_parser( char * msg, int delka){
+int zpracovavac_zprav_parser( struct s_zprava *p_zprava, char * msg, int delka){
     printf("jsem v parseru se zpravou: %s o delce: %d \n", msg, delka);
     // klient* kli = (klient*) malloc(sizeof(klient));
-    struct s_zprava * p_zpr =calloc(1,sizeof(s_zprava));
+   // struct s_zprava * p_zpr =calloc(1,sizeof(s_zprava));
+    
+    p_zprava->prvni_cast = calloc(1, 1);
+    p_zprava->druha_cast = calloc( MAX_DELKA_JMENA,1);
+    p_zprava->treti_cast = calloc(MAX_DELKA_JMENA,1);
+    
     int i=0;
     int j=0;
     while ((i<delka-1)&&(msg[i]!='|')){
@@ -102,19 +108,18 @@ struct s_zprava* zpracovavac_zprav_parser( char * msg, int delka){
         //printf("icko je %d \n", i);
     }
     if (i==0){
-        p_zpr->prvni_cast = calloc(1,sizeof(char));
-        p_zpr->prvni_cast = "-";
-        p_zpr->druha_cast = calloc(1,1);
-        p_zpr->druha_cast = "-";
-        p_zpr->treti_cast = calloc(1,1);
-        p_zpr->treti_cast = "-";
+        
+        p_zprava->prvni_cast[0] = '-';
+        p_zprava->druha_cast[0] = '-';
+        p_zprava->treti_cast[0] = '-';
     }
     else {
       //  printf("jej\n" );
-        p_zpr->prvni_cast = calloc((i+1),sizeof(char));
         printf("icko je: %d \n" , i);
-        memcpy(p_zpr->prvni_cast,msg, i);
-      //  printf("prvni cas prijate zpravy je: %s \n", p_zprava->prvni_cast);
+        memcpy(p_zprava->prvni_cast,msg, i);
+        printf("prvni cas prijate zpravy je: %s \n", p_zprava->prvni_cast);
+         printf("\n -0-    %d   %d", sizeof(p_zprava->prvni_cast), 1);
+         printf("\n dd \n");
         i++;
         j=i;
       
@@ -124,14 +129,11 @@ struct s_zprava* zpracovavac_zprav_parser( char * msg, int delka){
            // printf("icko dva je %d \n", i);
         }
          if (i==j){
-            p_zpr->druha_cast = calloc(1,1);
-            p_zpr->druha_cast = "-";
-            p_zpr->treti_cast = calloc(1,1);
-            p_zpr->treti_cast = "-";
+             p_zprava->druha_cast[0] = '-';
+            p_zprava->treti_cast[0] = '-';
         }
         else {
-            p_zpr->druha_cast = malloc(sizeof(char)*(i-j));
-            memcpy(p_zpr->druha_cast,msg + j, i-j);
+           memcpy(p_zprava->druha_cast,msg + j, i-j);
            // printf("druha cas prijate zpravy je: %s \n", p_zprava->druha_cast);
 
             i++;
@@ -142,20 +144,19 @@ struct s_zprava* zpracovavac_zprav_parser( char * msg, int delka){
               //  printf("icko tri je %d \n", i);
             }
             if (i==j){
-                 p_zpr->treti_cast = malloc(1);
-                 p_zpr->treti_cast = "-";
+                 
+                 p_zprava->treti_cast[0] = '-';
             }
             else {
-                p_zpr->treti_cast = malloc(sizeof(char)*(i-j));
-                memcpy(p_zpr->treti_cast,msg +j , i-j);
+               memcpy(p_zprava->treti_cast,msg +j , i-1);
            //     printf("treti cas prijate zpravy je: %s \n", p_zprava->treti_cast);
             }
         }
     }
-    printf("prvni cast prijate zpravy je: %s \n", p_zpr->prvni_cast);
-    printf("druha cast prijate zpravy je: %s \n", p_zpr->druha_cast);
-    printf("treti cast prijate zpravy je: %s \n", p_zpr->treti_cast);
-    return p_zpr;
+    printf("prvni cast prijate zpravy je: %s \n", p_zprava->prvni_cast);
+    printf("druha cast prijate zpravy je: %s \n", p_zprava->druha_cast);
+    printf("treti cast prijate zpravy je: %s \n", p_zprava->treti_cast);
+    return 0;
 }
 
 int zpracovavac_zprav_registrace(int fd, struct s_zprava * p_zprava){
@@ -170,18 +171,22 @@ int zpracovavac_zprav_registrace(int fd, struct s_zprava * p_zprava){
       }
       else{
           //zkontrolovat zda jmeno uz existuje int
-         int id = klienti_vrat_id_klienta(fd);
-         if (id == -1){
-             return -1;
+         int id = klienti_vrat_id_klienta_fd(fd);
+         printf("id je %d \n", id);
+          if (id == -1){
+              klienti_pridej_klienta(fd);
+              id = klienti_vrat_id_klienta_fd(fd);
          } 
-         else if (globalni_promenne_pridej_jmeno(p_zprava->druha_cast) == -1){
+         if (globalni_promenne_pridej_jmeno(p_zprava->druha_cast) == -1){
              printf("kuk");
-               tcp_server_send_message(fd, "0|3", 3 );
+             tcp_server_send_message(fd, "0|3", 3 );
          
          }
          else{
-             (GLOBAL_klienti + id)->jmeno_hrace = p_zprava->druha_cast;
-             (GLOBAL_klienti +id)->heslo;
+             printf("globalik %s \n", (GLOBAL_klienti + id)->jmeno_hrace);
+             strcpy((GLOBAL_klienti + id)->jmeno_hrace, p_zprava->druha_cast);
+             strcpy((GLOBAL_klienti + id)->heslo, p_zprava->treti_cast);
+             (GLOBAL_klienti +id)->stav_stavoveho_diagramu =1;
              tcp_server_send_message(fd, "0|0", 3 );
          }
       }
@@ -190,13 +195,14 @@ int zpracovavac_zprav_registrace(int fd, struct s_zprava * p_zprava){
 }
 
 int zpracovavac_zprav_znovu_pripojeni(int fd,struct s_zprava *p_zprava){
-    int id = klienti_vrat_id_klienta(fd);
+    int id = klienti_vrat_id_klienta_fd(fd);
     if (id == -1){
         tcp_server_send_message(fd, "9", 1);
         return -1;
     }
     
     if ((strcmp(p_zprava->druha_cast, (GLOBAL_klienti +id)->jmeno_hrace) == 0) && (strcmp(p_zprava->treti_cast, (GLOBAL_klienti +id)->heslo) == 0)){
+        (GLOBAL_klienti +id)->stav_stavoveho_diagramu=1;
         tcp_server_send_message(fd,"1|0",3);   //ze je ok zaregistrovanej
     }
     else{
@@ -207,13 +213,15 @@ int zpracovavac_zprav_znovu_pripojeni(int fd,struct s_zprava *p_zprava){
 }
 
 int zpracovavac_zprav_start(int fd,struct s_zprava *p_zprava){
-    int id = klienti_vrat_id_klienta(fd);
-    if((id == -1) && ((GLOBAL_klienti +id)->stav_stavoveho_diagramu != 1)){
+    int id = klienti_vrat_id_klienta_fd(fd);
+    printf(" id ve start je %d    a fd je %d\n", id, fd);
+    if((id == -1) || ((GLOBAL_klienti +id)->stav_stavoveho_diagramu != 1)){
         tcp_server_send_message(fd, "9",1);
         return -1;
     }
     else{
         (GLOBAL_klienti +id)->stav_stavoveho_diagramu = 2; //overit ze dva je pripraven na hru
+        hry_prirad_do_hry(id);
         tcp_server_send_message(fd,"2|0",3);
     }
     
@@ -222,14 +230,17 @@ int zpracovavac_zprav_start(int fd,struct s_zprava *p_zprava){
 
 
 int zpracovavac_zprav_odpoved(int fd,struct s_zprava *p_zprava){
-    int id = klienti_vrat_id_klienta(fd);
+    int id = klienti_vrat_id_klienta_fd(fd);
     if (id == -1 ){
       tcp_server_send_message(fd,"9",1);
       return -1;
     }
     if (((GLOBAL_klienti + id)->stav_stavoveho_diagramu ==3)&&((GLOBAL_klienti + id)->zamek_odpovedi == 0)){
         (GLOBAL_klienti + id)->zamek_odpovedi =1;
-        (GLOBAL_klienti + id)->odpoved=p_zprava->druha_cast;
+        
+        
+        //zde musim prevest na int
+       // memcpy((GLOBAL_klienti + id)->odpoved,p_zprava->druha_cast, DELKA_ODPOVED ); //takhle nejde
         //mozna davad vedet ze odpoved prijata nebo dalsi veci
         tcp_server_send_message(fd,"3|0",3);
         
@@ -242,13 +253,15 @@ int zpracovavac_zprav_odpoved(int fd,struct s_zprava *p_zprava){
 
 
 int zpracovavac_zprav_odpoj(int fd,struct s_zprava *p_zprava){
-    int id = klienti_vrat_id_klienta (fd);
+  int id = klienti_vrat_id_klienta_fd(fd);
     if (id == -1){
        tcp_server_send_message(fd,"9",1); 
     }
-    if (strcmp(p_zprava->druha_cast, "0")==0){
+   if (strcmp(p_zprava->druha_cast, "0")==0){
         //uplne idpojeni a zapomenuti 
         //DOPLNIT O OODSTRANENI JMENA ZE SEZNAMU
+       
+        printf("odebrano \n");
         if ((GLOBAL_hry + (GLOBAL_klienti +id)->herni_mistnost)->id_hrac_dva == id){
             (GLOBAL_hry + (GLOBAL_klienti +id)->herni_mistnost)->id_hrac_dva = -1; //taky tu musi bejt nejakej zamek urcite
         }
@@ -261,6 +274,7 @@ int zpracovavac_zprav_odpoj(int fd,struct s_zprava *p_zprava){
      if (strcmp(p_zprava->druha_cast, "1")==0){
          (GLOBAL_klienti + id)->stav_stavoveho_diagramu = 5;
          klienti_odhlas_klienta(id);
+         tcp_server_send_message(fd,"4|0",3); 
      }
     return 0;
 }

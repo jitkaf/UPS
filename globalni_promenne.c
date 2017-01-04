@@ -12,9 +12,10 @@
  */
 
 
-
-#include "globalni_promenne.h"
+#include <pthread.h>
 #include "konstanty.h"
+#include "globalni_promenne.h"
+
 #include "klient.h"
 
 #include "hra.h"
@@ -24,66 +25,58 @@
 
 
 
+
 int globalni_promenne_inicializace(){
      GLOBAL_pocet = 0;
     //GLOBAL_klienti=  malloc(sizeof(klient) * maxKlientu);
      GLOBAL_klienti = ( klient*)malloc(sizeof(klient) * MAX_KLIENTU);
      GLOBAL_hry = (s_hra*)malloc(sizeof(s_hra) * MAX_HER);
-     struct s_seznam_jmen *prvni = malloc(sizeof(s_seznam_jmen));
-     prvni->jmeno = malloc(MAX_DELKA_JMENA);
-     prvni->jmeno=NULL;
-     prvni->p_predchozi=NULL;
-     prvni->p_dalsi=GLOBAL_p_posledni;
-     struct s_seznam_jmen *posledni = malloc(sizeof(s_seznam_jmen));
-     posledni->jmeno = malloc(MAX_DELKA_JMENA);
-     posledni->jmeno=NULL;
-     posledni->p_dalsi=NULL;
-     posledni->p_predchozi = prvni;
-     
+    
+     GLOBAL_p_prvni = calloc(1,sizeof(s_seznam_jmen));
+     GLOBAL_p_prvni->p_dalsi=NULL;
+     GLOBAL_p_prvni->p_predchozi=NULL;
      return 0;
 }
 
 int globalni_promenne_pridej_jmeno(char *jmeno){
     int x;
-    printf("jsem v int globalni_promenne_pridej_jmeno(char *jmeno) a jmeno je %s", jmeno);
-  if(GLOBAL_p_prvni->jmeno == NULL){
-      GLOBAL_p_prvni->jmeno = jmeno;
+    printf("jsem v int globalni_promenne_pridej_jmeno(char *jmeno) a jmeno je %s   a ohle: %s \n", jmeno, GLOBAL_p_prvni->jmeno);
+   if(GLOBAL_p_prvni->jmeno == NULL){
+       printf("jeden \n");
+       GLOBAL_p_prvni->jmeno = calloc(MAX_DELKA_JMENA,1);
+      
+       memcpy(GLOBAL_p_prvni->jmeno, jmeno, MAX_DELKA_JMENA);
+       printf("jmeno: %s \n", GLOBAL_p_prvni->jmeno);
   }
-  else if(GLOBAL_p_posledni->jmeno== NULL){
-     x = globalni_promenne_porovnej_stringy(GLOBAL_p_prvni->jmeno, jmeno);
-      if (x == 0){
-          return -1; //jmeno obsazeno
-      }
-      else if (x == 1){
-          GLOBAL_p_posledni->jmeno=jmeno;
-      }
-      else{
-          GLOBAL_p_posledni=GLOBAL_p_prvni;
-          GLOBAL_p_prvni->p_dalsi=GLOBAL_p_posledni;
-          GLOBAL_p_prvni->jmeno = jmeno;
-          GLOBAL_p_posledni->p_predchozi = GLOBAL_p_prvni;
-          GLOBAL_p_posledni->p_dalsi=NULL;
-      }
-  }else{//pridavam treti
-      struct s_seznam_jmen *pom = GLOBAL_p_prvni;
-      while(pom->p_dalsi!=NULL){
-           x = globalni_promenne_porovnej_stringy(pom->jmeno, jmeno);
+   else{//pridavam treti
+      printf("tretii \n");
+       printf("jmeno: %s \n", GLOBAL_p_prvni->jmeno);
+      struct s_seznam_jmen *pom=GLOBAL_p_prvni;//tady musim prekopirovavat!!!
+      printf("- %p -\n", pom);
+       while(pom->p_dalsi!=NULL){
+          printf(" while: %s \n", pom->jmeno);
+           x = strcmp(pom->jmeno, jmeno);
+           printf(" to x je :   %d \n", x);
            if (x == 0){
+               printf("obsazeno \n");
                return -1;
-           }
-           if(x == 2){
-               struct s_seznam_jmen * nova = malloc(sizeof(struct s_seznam_jmen));
-               nova->jmeno=malloc(sizeof(jmeno));
-               nova->jmeno = jmeno;
-               nova->p_predchozi = pom->p_predchozi;
-               if (pom->p_predchozi!= NULL) {
-                   pom->p_predchozi->p_dalsi=pom;
-               }
-               nova->p_dalsi = pom;
-               return 0;
            }
            pom = pom->p_dalsi;
       }
+      x = strcmp(pom->jmeno, jmeno);
+      printf(" to x je :   %d \n", x);
+           if (x == 0){
+               printf("obsazeno \n");
+               return -1;
+           }
+      struct s_seznam_jmen *p_nova = calloc(1,sizeof(s_seznam_jmen));
+      p_nova->jmeno=calloc(MAX_DELKA_JMENA,1);
+      memcpy(p_nova->jmeno, jmeno, MAX_DELKA_JMENA);
+      p_nova->p_dalsi=NULL;
+      p_nova->p_predchozi=pom;
+      pom->p_dalsi=p_nova;
+      printf(" predposledn jmeno: %s \n", pom->jmeno);
+      printf(" predposledn jmeno: %p \n", pom->p_dalsi);
   }
     return 0;
 }
@@ -122,25 +115,42 @@ int globalni_promenne_porovnej_stringy(char *jeden, char* druhej){
 
 int globalni_promenne_odeber_jmeno(char *jmeno){
   struct  s_seznam_jmen *pom = GLOBAL_p_prvni;
+  printf("odebiram jmeno %s \n", jmeno);
    while ((pom!=NULL) && (strcmp(pom->jmeno, jmeno)!=0)){
       
        pom=pom->p_dalsi;
    }
    if ((pom!=NULL) &&(strcmp(pom->jmeno, jmeno) == 0)){
-       if (pom->p_predchozi != NULL){
-           pom->p_predchozi->p_dalsi = pom;        
-       } 
-       else{
-           GLOBAL_p_prvni = pom;
-           GLOBAL_p_prvni->p_dalsi =pom->p_dalsi;
+      
+       if(pom->p_predchozi == NULL){ //odstranuji prvni prvek
+            printf("prvni \n");
+           
+           
+           if (pom->p_dalsi != NULL){ //neni jedina
+               GLOBAL_p_prvni=pom->p_dalsi;
+                GLOBAL_p_prvni->p_predchozi=NULL;
+                if(GLOBAL_p_prvni->p_dalsi != NULL){
+                    GLOBAL_p_prvni->p_dalsi->p_predchozi= GLOBAL_p_prvni;
+                }
+           }
+           else{//je jedina
+               free(GLOBAL_p_prvni->jmeno);
+               GLOBAL_p_prvni->jmeno=NULL;
+               printf("po free %s \n", GLOBAL_p_prvni->jmeno);
+           }
+           
        }
-       if (pom->p_dalsi != NULL){
-           pom->p_dalsi->p_predchozi=NULL;
+       else if(pom->p_dalsi == NULL){ //odstranuji posledni co neni zaroven prvnim
+           printf("posledni \n");
+           pom->p_predchozi->p_dalsi=NULL;
        }
-       else{
-           GLOBAL_p_posledni = pom;
-           GLOBAL_p_posledni->p_predchozi = pom->p_predchozi;
+       else{ //je uprostred
+           printf("uprostred \n");
+           pom->p_predchozi->p_dalsi=pom->p_dalsi;
+           pom->p_dalsi->p_predchozi=pom->p_predchozi;
        }
+       printf("od \n");
+        //zde asi free(pom); - nebude musim ho dat ruzne aby minulo to kdy se jedna o jedine jmeno
    }
    
    return 0;

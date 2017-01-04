@@ -27,8 +27,8 @@ klient *muj_klient = pole_klientu + N;*/
 int main (void){
     
     char *kk = malloc(2);
-    kk="ab\0";
-    printf(" vel  %d  %d %zd  %d  %d\n", sizeof("ab"), sizeof(char), strlen(kk), sizeof(&kk), sizeof(*kk));
+    kk="0";
+    printf(" vel  %d  %d %zd  %d  %d\n", sizeof("ab"), sizeof(kk), strlen(kk), sizeof(&kk), sizeof(*kk));
     int server_socket;
     int client_socket, fd;
     int return_value;
@@ -48,7 +48,7 @@ int main (void){
     my_addr.sin_port = htons(PORT);
     my_addr.sin_addr.s_addr = INADDR_ANY;
 
-    printf("Binding port %05zd ...", PORT);
+    printf("Binding port %05d ...", PORT);
     return_value = bind(server_socket, (struct sockaddr *) &my_addr, sizeof(struct sockaddr_in));
     
     if (return_value == 0)
@@ -75,6 +75,7 @@ int main (void){
             pom=-1;
             memset(zprava,0, DELKA_ZPRAVY);
             printf("vytvoreno %s\n",zprava);
+            
             tests = client_socks;
             // sada deskriptoru je po kazdem volani select prepsana sadou deskriptoru kde se neco delo
             return_value = select( FD_SETSIZE, &tests, ( fd_set *)0, ( fd_set *)0, ( struct timeval *)0 );
@@ -101,8 +102,9 @@ int main (void){
                         char * zp = malloc(1);
                         zp = "a";
                         tcp_server_send_message(client_socket, zp, strlen(zp));
-                        GLOBAL_pocet++;
+                      
                         printf("Pripojen novy klient (zatim neprihlasen) a pridan do sady socketu\n");
+                        printf(" uz  %s\n", (GLOBAL_klienti+GLOBAL_pocet)->jmeno_hrace);
                     }
                     // je to klientsky socket ? prijmem data
                     else {
@@ -129,6 +131,7 @@ int main (void){
                             }
                             printf("Klient se odpojil a byl odebran ze sady socketu\n");
                         }
+                         printf("\n ----  %s    %d \n", (GLOBAL_klienti+GLOBAL_pocet-1)->jmeno_hrace, (GLOBAL_pocet));
                     }
                 }
             }   
