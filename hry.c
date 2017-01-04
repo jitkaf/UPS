@@ -28,6 +28,7 @@ int hry_prirad_do_hry(int id_hrac){
         if ((GLOBAL_hry + i)->stav == 0){
             (GLOBAL_hry + i)->stav =1;
             (GLOBAL_hry + i)->id_hrac_jedna = id_hrac;
+            (GLOBAL_hry +i)->vlakno = -1;
             printf("prida prvni hrac \n");
             return 0;
         }
@@ -35,10 +36,28 @@ int hry_prirad_do_hry(int id_hrac){
             (GLOBAL_hry + i)->stav =2;
             (GLOBAL_hry + i)->id_hrac_dva = id_hrac;
             //ZDE BUDU JESTE TVORIT VLAKNO PRO HRU A HRA ZACNE
+            hry_vytvor_vlakno_hry(i);
             printf("pridan druhy hrac \n");
             return 0;
         }
     }
     
     return -1; //signalizuje ze je plno
+}
+
+int hry_vytvor_vlakno_hry(int id_hry){
+        int *arg = malloc(sizeof(*arg));
+        *arg = id_hry;
+        pthread_t thread;
+        pthread_create( &thread, 0, hry_smycka_vlakna, arg);
+     
+        pthread_join((GLOBAL_hry +id_hry)->vlakno, NULL); //temer urcite musi bejt jinde jinak nebude paraelni, zasekne se tu
+    
+    return 0;
+}
+
+void *hry_smycka_vlakna( void *arg){
+   int id_hry =*((int *) arg);
+   
+   printf("borkyne ziskava i %d \n", id_hry);
 }
