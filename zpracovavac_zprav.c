@@ -214,7 +214,7 @@ int zpracovavac_zprav_znovu_pripojeni(int fd,struct s_zprava *p_zprava){
 
 int zpracovavac_zprav_start(int fd,struct s_zprava *p_zprava){
     int id = klienti_vrat_id_klienta_fd(fd);
-    printf(" id ve start je %d    a fd je %d\n", id, fd);
+    printf(" id ve start je %d    a fd je %d a stav: %d\n", id, fd, (GLOBAL_klienti +id)->stav_stavoveho_diagramu);
     if((id == -1) || ((GLOBAL_klienti +id)->stav_stavoveho_diagramu != 1)){
         tcp_server_send_message(fd, "9",1);
         return -1;
@@ -224,30 +224,45 @@ int zpracovavac_zprav_start(int fd,struct s_zprava *p_zprava){
         hry_prirad_do_hry(id);
         tcp_server_send_message(fd,"2|0",3);
     }
-    
+    printf(" id po startu start je %d    a fd je %d a stav: %d\n", id, fd, (GLOBAL_klienti +id)->stav_stavoveho_diagramu);
     return 0;
 }
 
 
 int zpracovavac_zprav_odpoved(int fd,struct s_zprava *p_zprava){
     int id = klienti_vrat_id_klienta_fd(fd);
+    int odpoved=-1;
+    
     if (id == -1 ){
       tcp_server_send_message(fd,"9",1);
       return -1;
     }
+    printf(" pom----: %d \n", ((GLOBAL_klienti + id)->stav_stavoveho_diagramu));
+    printf("pomka---- %d \n ", (GLOBAL_klienti + id)->zamek_odpovedi);
     if (((GLOBAL_klienti + id)->stav_stavoveho_diagramu ==3)&&((GLOBAL_klienti + id)->zamek_odpovedi == 0)){
         (GLOBAL_klienti + id)->zamek_odpovedi =1;
         
         
+        if(p_zprava->druha_cast[0] == '1'){
+            odpoved =1;
+        }
+        else if(p_zprava->druha_cast[0] == '2'){
+            odpoved =2;
+        }
+        else  if(p_zprava->druha_cast[0] == '3'){
+            odpoved =3;
+        }
         //zde musim prevest na int
-       // memcpy((GLOBAL_klienti + id)->odpoved,p_zprava->druha_cast, DELKA_ODPOVED ); //takhle nejde
+        (GLOBAL_klienti + id)->odpoved =odpoved;
         //mozna davad vedet ze odpoved prijata nebo dalsi veci
         tcp_server_send_message(fd,"3|0",3);
-        
+        (GLOBAL_klienti + id)->zamek_odpovedi =0;
     }
     else{
         tcp_server_send_message(fd,"3|1",3);
     }
+    
+      printf(" id po odpovedi je %d    a fd je %d a stav: %d\n", id, fd, (GLOBAL_klienti +id)->stav_stavoveho_diagramu);
     return 0;
 }
 

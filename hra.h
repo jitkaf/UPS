@@ -13,7 +13,7 @@
 
 #ifndef HRA_H
 #define HRA_H
-
+#include <pthread.h>
 
 typedef
 struct s_hra
@@ -24,13 +24,15 @@ struct s_hra
     int score_hrac_jedna;
     int score_hrac_dva;
     int stav;
-    int vlakno;
+    int prirazene_vlakno;
+    pthread_t vlakno;
     
 } s_hra;
 
-int hra_vyrezetuj_hru(struct s_hra hra);
+int hra_poprve(int a, struct s_hra *hra);
+int hra_vyrezetuj_hru(struct s_hra *hra);
 
-int hra_vyhodnot_odpoved(struct s_hra hra, int odpoved, int spravna_odpoved);
+int hra_vyhodnot_odpoved(struct s_hra *hra, int spravna_odpoved, int odpoved_jedna, int odpoved_dva);
 
 
 

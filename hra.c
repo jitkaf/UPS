@@ -16,19 +16,28 @@
 #include <string.h>
 #include <pthread.h>
 
-int hra_vyrezetuj_hru(struct s_hra hra){
+int hra_vyrezetuj_hru(struct s_hra *hra){
     //tady bude muset bejt nejakej zamek aby se to provedlo atomicky
-    hra.stav  = 0;
-    hra.id_hrac_jedna = 0;
-    hra.id_hrac_dva = 0;
-    hra.score_hrac_jedna =0;
-    hra.cislo_otazky = 0;
-    hra.score_hrac_dva =0;
+    hra->stav  = 0;
+    hra->id_hrac_jedna = -1;
+    hra->id_hrac_dva = -1;
+    hra->score_hrac_jedna =0;
+    hra->cislo_otazky = 0;
+    hra->score_hrac_dva =0;
+   
 }
 
-int hra_vyhodnot_odpoved(struct s_hra hra, int odpoved, int spravna_odpoved){
-    if (odpoved == spravna_odpoved){
-       hra.score_hrac_jedna ++;
+int hra_poprve(int a, struct s_hra *hra){
+    hra->prirazene_vlakno=a;
+}
+
+int hra_vyhodnot_odpoved(struct s_hra *hra, int spravna_odpoved, int odpoved_jedna, int odpoved_dva){
+    if (odpoved_jedna == spravna_odpoved){
+       hra->score_hrac_jedna ++;
+       return 1;
+    }
+    if (odpoved_dva == spravna_odpoved){
+       hra->score_hrac_dva ++;
        return 1;
     }
     return 0;

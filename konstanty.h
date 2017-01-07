@@ -21,7 +21,9 @@
 #define DELKA_ODPOVED 1
 #define PORT 20001
 
-
+#define POCET_OTAZEK 10
+#define DELKA_OZAZKY 100
+#define DELKA_MOZNOSTI 10
 #define PRAZDNA_HRA 0
 #define CEKA_NA_PRIPOJENI_Hrace 1
 #define HRAJE_SE 2
@@ -29,5 +31,9 @@
 
 
 #define PRAZDNE_JMENO 0
+
+
+
+
 
 #endif /* KONSTANTY_H */

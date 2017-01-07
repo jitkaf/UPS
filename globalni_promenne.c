@@ -12,7 +12,7 @@
  */
 
 
-#include <pthread.h>
+//#include <pthread.h>
 #include "konstanty.h"
 #include "globalni_promenne.h"
 
@@ -31,6 +31,7 @@ int globalni_promenne_inicializace(){
     //GLOBAL_klienti=  malloc(sizeof(klient) * maxKlientu);
      GLOBAL_klienti = ( klient*)malloc(sizeof(klient) * MAX_KLIENTU);
      GLOBAL_hry = (s_hra*)malloc(sizeof(s_hra) * MAX_HER);
+    
     
      GLOBAL_p_prvni = calloc(1,sizeof(s_seznam_jmen));
      GLOBAL_p_prvni->p_dalsi=NULL;

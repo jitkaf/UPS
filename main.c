@@ -25,7 +25,7 @@ klient *pole_klientu = malloc(sizeof(klient) * M) kde M je libovolný přirozen�
 a potom když chceš získat klienta N, což je přirozený číslo v rozsahu <0; M), děláš to takhle:
 klient *muj_klient = pole_klientu + N;*/
 int main (void){
-    
+    herni_otazky_nacti_otazky();
     char *kk = malloc(2);
     kk="0";
     printf(" vel  %d  %d %zd  %d  %d\n", sizeof("ab"), sizeof(kk), strlen(kk), sizeof(&kk), sizeof(*kk));

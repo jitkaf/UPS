@@ -15,7 +15,8 @@
 #define HRY_H
 
 int hry_prirad_do_hry(int id_hrac);
-
+int hry_vytvor_vlakno_hry(int i);
+void *hry_smycka_vlakna( void *arg );
 
 
 #endif /* HRY_H */

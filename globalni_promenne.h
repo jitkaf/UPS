@@ -13,7 +13,7 @@
 
 #ifndef GLOBALNI_PROMENNE_H
 #define GLOBALNI_PROMENNE_H
-#include <pthread.h>
+
 
 struct s_seznam_jmen{
     char *jmeno;
@@ -31,7 +31,7 @@ int GLOBAL_pocet;
 struct s_hra * GLOBAL_hry;
 struct klient * GLOBAL_klienti; 
 
-pthread_t GLOBAL_vlakna[10];
+
 
 int globalni_promenne_inicializace();
 int globalni_promenne_pridej_jmeno(char *jmeno);
