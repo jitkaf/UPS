@@ -1,6 +1,8 @@
 package uzivatelskeRozhrani;
 
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 
 import javafx.beans.value.ChangeListener;
@@ -28,15 +30,16 @@ import logika.ProstrednikPoslat;
 
 
 
-public class Okno extends Application implements Runnable
+public class Okno
 {
-   private static ProstrednikPoslat prostrednikPos;
-    static void launch(Class<Okno> aClass, ProstrednikPoslat prostrednikP) {
-        prostrednikPos=prostrednikP;
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+   private  static ProstrednikPoslat prostrednikPos;
+    
+        private BorderPane okno; //tohle budu predavat
+        private TextArea jmeno = new TextArea();
+        private TextArea heslo = new TextArea();
+          private TextArea vysledek = new TextArea();
+          int scena =0;
         
-	private BorderPane okno; //tohle budu predavat
 	private TextArea vstup = new TextArea();
 	private TextArea vystup = new TextArea();
 	private TextArea posunl = new TextArea();
@@ -48,28 +51,102 @@ public class Okno extends Application implements Runnable
 	
        public Okno(ProstrednikPoslat prostrednikPos){
            this.prostrednikPos=prostrednikPos;
+          
+           
+       }
+       
+       public int  getScena(){
+           return scena;
+       }
+       /*
+       ** Sestavi vse potrebne pro prihlaseni uzivatele - jedna se o uvodni obrazovku
+       */
+       public Parent sestavBorderPaneUvodniObrazovka(){
+           prostrednikPos.setStavStavovehoDiagramu(0);
+           okno = new BorderPane();
+           okno.setCenter(getPrihlasovatko());
+            System.out.println("v okne " + prostrednikPos.getData()); System.out.println("ve start " + prostrednikPos.getData());
+           return okno;
        }
 
-
-/**
-	 * Vykreslí okno aplikce
-	 */
-	@Override
-	public void start(Stage s) throws Exception {
-		s.setTitle("Vědomostní kvíz");
-		s.setScene(new Scene(sestavDoBorderPane()));
-		s.setMinHeight(950);
-		s.setMinWidth(900);
-		s.setMaxHeight(1000);
-		s.setMaxWidth(900);
-		s.show();
-	}
+       public Node getPrihlasovatko(){
+           VBox policka =new VBox();
+           policka.setSpacing(30);
+           policka.setPadding(new Insets(30));
+           
+		//nastaví preferované hodnoty počtu řádků a sloupců
+           jmeno.setPrefColumnCount(10);
+	   jmeno.setPrefRowCount(25);
+           heslo.setPrefColumnCount(10);
+	   heslo.setPrefRowCount(25);
+           vysledek.setPrefColumnCount(10);
+	   vysledek.setPrefRowCount(25);
+           Button prihlasit = new Button("Přihlásit");
+           prihlasit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	//vyber sifrovaci metody podle zvoleneho radiobuttonu
+                
+                if ((jmeno.getText().length() != 0) && (heslo.getText().length() !=0)){
+                    //zde doplnit zamek lepe
+                    if (prostrednikPos.getZamekData() == 0){
+                        prostrednikPos.setZamekData(1);
+                        System.out.println("chci poslat: " + "0|"+jmeno.getText()+"|"+heslo.getText());
+                        prostrednikPos.setData("0|"+jmeno.getText()+"|"+heslo.getText());
+                      //  prostrednikPos.setCekajData(1);
+                        prostrednikPos.setZamekData(2);
+                        
+                        vysledek.setText("čeká se na vyhodnocení přihlášení" + prostrednikPos.getCekajData());
+                       while((prostrednikPos.getZamekData() != 3)){
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException ex) {
+                                Logger.getLogger(Okno.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                        prostrednikPos.setZamekData(1);
+                        if (prostrednikPos.getData().compareTo("0")==0){
+                            vysledek.setText("Prihlaseni neprobehlo, mozna jste zadali duplicidni jmeno.");
+                            prostrednikPos.setData("");
+                            prostrednikPos.setZamekData(0);
+                        }
+                        else if (prostrednikPos.getData().compareTo("1") == 0){
+                            System.out.println("prihlaseni ok");
+                             prostrednikPos.setData("");
+                            prostrednikPos.setZamekData(0);
+                            okno.setLeft(getSpodniPanel());
+                        }
+                        
+                    }
+                    else{
+                        System.out.println("zamceno " + prostrednikPos.getZamekData());
+                    }
+                    
+                
+                }
+             }
+		    	
+            
+        });           
+                
+            	
+           
+           policka.getChildren().addAll(jmeno,heslo, prihlasit, vysledek);
+           
+           return policka;
+       }
 	
 
+        public Node getStart(){
+            TextArea text = new TextArea("jupi jejejeje");
+            
+            
+            return text;
+        }    
 	/*
 	 * Sestaví připravené komponenty do jednoho okna
 	 */
-	private Parent sestavDoBorderPane() {
+	public Parent sestavDoBorderPane() {
 		
 		okno = new BorderPane();
 		//přidá připravené komponenty na určenou pozici
@@ -394,8 +471,5 @@ public class Okno extends Application implements Runnable
 		return stred;
 	}
 
-    @Override
-    public void run() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+   
 }
