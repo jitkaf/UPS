@@ -1,5 +1,7 @@
 package uzivatelskeRozhrani;
 
+import uzivatelskeRozhrani.obsahyOkna.Start;
+import uzivatelskeRozhrani.obsahyOkna.Prihlasovatko;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -19,6 +21,8 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import logika.ProstrednikPoslat;
+import uzivatelskeRozhrani.obsahyOkna.HraCekani;
+import uzivatelskeRozhrani.obsahyOkna.HraOtazka;
 
 public class StavitelObsahuOkna {
 
@@ -37,7 +41,7 @@ public class StavitelObsahuOkna {
     private CheckBox auto;
     private int indexSifry = 0;
     private BorderPane layout;
-    IPohled pohled;
+     private int od = 0;
 
     public StavitelObsahuOkna(ProstrednikPoslat prostrednikPos) {
         this.prostrednikPos = prostrednikPos;
@@ -49,17 +53,17 @@ public class StavitelObsahuOkna {
 
     /*
        ** Sestavi vse potrebne pro prihlaseni uzivatele - jedna se o uvodni obrazovku
-     */
+     
     public BorderPane sestavBorderPaneUvodniObrazovka() {
         
         okno = new BorderPane();
-        okno.setCenter(getPrihlasovatko());
+        okno.setCenter(getPrihlasovatko(0));
         
         return okno;
-    }
+    }*/
 
-    public Prihlasovatko getPrihlasovatko() {
-        Prihlasovatko prihlasovatko = new Prihlasovatko();
+    public Prihlasovatko getPrihlasovatko(int opakovani) {
+        Prihlasovatko prihlasovatko = new Prihlasovatko(opakovani);
         
         prihlasovatko.prihlasit.setOnAction((ActionEvent event) -> {
             String jmeno, heslo;
@@ -106,11 +110,114 @@ public class StavitelObsahuOkna {
         return prihlasovatko;
     }
 
-    public Node getStart() {
-        TextArea text = new TextArea("jupi jejejeje");
-
-        return text;
+    
+    
+    public Start getStart(){
+         Start start = new Start();
+        
+          start.startuj.setOnAction((ActionEvent event) -> {
+            if (prostrednikPos.getZamekData() == 0) {
+                prostrednikPos.setZamekData(1);
+                prostrednikPos.setData("2");
+                prostrednikPos.setZamekData(2);
+                prostrednikPos.getPohled().prepniSe(IPohled.HRA_CEKANI);
+            }
+            else{
+                System.out.println("start obsazeno");
+            }
+            
+        });
+        
+        return start;
     }
+    
+    
+    
+    public HraCekani getHraCekani(){
+        HraCekani hraCekani = new HraCekani();
+        hraCekani.odhlasit.setOnAction((ActionEvent event) -> {
+            if (prostrednikPos.getZamekData() == 0) {
+                prostrednikPos.setZamekData(1);
+                prostrednikPos.setData("4|1");
+                prostrednikPos.setZamekData(2);
+            }
+            else{
+                System.out.println("HraCekani obsazeno");
+            }
+            
+        });
+        
+        hraCekani.ukoncit.setOnAction((ActionEvent event) -> {
+            System.out.println("Ukonceni aplikace.");
+            System.exit(1);
+            
+        });
+        
+        
+        return hraCekani;
+    }
+    
+    public HraOtazka getHraOtazka(){
+        String otazka = prostrednikPos.getOtazka();
+        String a = prostrednikPos.getAcko();
+        String b = prostrednikPos.getBecko();
+        String c = prostrednikPos.getCecko();
+        HraOtazka hraOtazka = new HraOtazka(otazka, a,b,c);
+       
+        
+        
+        hraOtazka.toggleGroupTG.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+            @Override
+            public void changed(ObservableValue<? extends Toggle> ov, Toggle t, Toggle t1) {
+
+                RadioButton chk = (RadioButton) t1.getToggleGroup().getSelectedToggle(); // Cast object to radio button
+                  
+                if (chk.getText().charAt(0) == 'A') {
+                   od = 1;
+                } else if (chk.getText().charAt(0)== 'B') {
+                   od = 2;
+                } else if (chk.getText().charAt(0)=='C') {
+                   od=3;
+                }
+            }
+        });
+
+        
+        
+        hraOtazka.odpovedet.setOnAction((ActionEvent event) -> {
+            if (prostrednikPos.getZamekData() == 0) {
+                prostrednikPos.setZamekData(1);
+                prostrednikPos.setData("3|" + od);
+                prostrednikPos.setZamekData(2);
+            }
+            else{
+                System.out.println("HraOtazka obsazeno");
+            }
+                   
+        });
+        
+        hraOtazka.odhlasit.setOnAction((ActionEvent event) -> {
+            if (prostrednikPos.getZamekData() == 0) {
+                prostrednikPos.setZamekData(1);
+                prostrednikPos.setData("4|1");
+                prostrednikPos.setZamekData(2);
+            }
+            else{
+                System.out.println("HraCekani obsazeno");
+            }
+            
+        });
+        
+        hraOtazka.ukoncit.setOnAction((ActionEvent event) -> {
+            System.out.println("Ukonceni aplikace.");
+            System.exit(1);
+            
+        });
+        
+        return hraOtazka;
+    }
+    
+   
 
     /*
 	 * Sestaví připravené komponenty do jednoho okna
@@ -283,7 +390,7 @@ public class StavitelObsahuOkna {
             public void changed(ObservableValue<? extends Toggle> ov, Toggle t, Toggle t1) {
 
                 RadioButton chk = (RadioButton) t1.getToggleGroup().getSelectedToggle(); // Cast object to radio button
-
+                
                 //zde budu překreslovat panel
                 okno.setCenter(new Button(chk.getText()));
 

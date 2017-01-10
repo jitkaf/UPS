@@ -21,6 +21,10 @@ public class ProstrednikPoslat {
     private int zamekData = 0;
     private int stavStavovehoDiagramu = -1;
     protected IPohled pohled;
+    private String otazka="";
+    private String acko="";
+    private String becko="";
+    private String cecko="";
     
     public TcpPrijmac tcpPrijimac;
     public TcpOdesilac tcpOdesilac;
@@ -30,11 +34,12 @@ public class ProstrednikPoslat {
     }
     
     public ProstrednikPoslat(IPohled pohled) {
+        System.out.println("nastavuji i pohled " + pohled)   ;
         this.setPohled(pohled);
     }
     
     public void setPohled(IPohled pohled){
-        
+        this.pohled = pohled;
     }
 
     public IPohled getPohled() {
@@ -81,4 +86,35 @@ public class ProstrednikPoslat {
         zamekData = zamek;
     }
 
+    public void setOtazka(String otazka){
+        this.otazka=otazka;
+    }
+    
+    public String getOtazka(){
+        return otazka;
+    }
+    
+    public void setAcko(String acko){
+        this.acko=acko;
+    }
+    
+    public String getAcko(){
+        return acko;
+    }
+    
+    public void setBecko(String becko){
+        this.becko = becko;
+    }
+    
+    public String getBecko(){
+        return becko;
+    }
+    
+    public void setCecko(String cecko){
+        this.cecko= cecko;
+    }
+    
+    public String getCecko(){
+        return cecko;
+    }
 }

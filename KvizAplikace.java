@@ -54,6 +54,7 @@ public class KvizAplikace extends Application {
 
         KvizScena kvizScena = new KvizScena(prostrednikPos);
         prostrednikPos.setPohled(kvizScena);
+        System.out.println("ipohled ze start " + IPohled.PRIHLASENI);
         kvizScena.prepniSe(IPohled.PRIHLASENI);
         
         

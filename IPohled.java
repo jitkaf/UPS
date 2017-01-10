@@ -15,7 +15,8 @@ public interface IPohled {
   public static final int KONEC_HRY = 3;*/
   
   public static final int PRIHLASENI = 1;
-  public static final int UVOD = 2;
+  public static final int PRIHLASENI_CHYBA =11;
+  public static final int START = 2;
   public static final int HRA_CEKANI = 4;
   public static final int HRA_OTAZKA = 3;
   

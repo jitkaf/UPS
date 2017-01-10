@@ -36,11 +36,26 @@ public class KvizScena extends Scene implements IPohled {
     @Override
     public void prepniSe(int idPohled) {
         Platform.runLater(() -> {
+            System.out.println("Jsem v prepni se idpohled je: " + idPohled);
             switch (idPohled) {
+                
                 case IPohled.PRIHLASENI:
-                    this.setObsah(stavitel.getPrihlasovatko());
+                    this.setObsah(stavitel.getPrihlasovatko(0));
                     break;
-                //case IPohled.HERNI_MISTNOSTI: this.layout.setCenter(...); break;
+                case IPohled.PRIHLASENI_CHYBA:
+                    this.setObsah(stavitel.getPrihlasovatko(1));
+                    break;
+                case IPohled.START:
+                    this.setObsah(stavitel.getStart());
+                    break;
+                case IPohled.HRA_CEKANI:
+                    this.setObsah(stavitel.getHraCekani());
+                    break;
+                case IPohled.HRA_OTAZKA:
+                    this.setObsah(stavitel.getHraOtazka());
+                    break;
+                    
+                    
                 //  case IPohled.KONEC_HRY: this.layout.setCenter(...); break;
                 default:
                     System.err.println("Nezname id pohledu: " + idPohled);
