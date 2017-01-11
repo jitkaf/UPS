@@ -1,5 +1,7 @@
 package uzivatelskeRozhrani;
 
+import java.io.IOException;
+import java.net.Socket;
 import uzivatelskeRozhrani.obsahyOkna.Start;
 import uzivatelskeRozhrani.obsahyOkna.Prihlasovatko;
 import javafx.beans.value.ChangeListener;
@@ -20,9 +22,13 @@ import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import komunikace.TcpOdesilac;
+import komunikace.TcpPrijmac;
 import logika.ProstrednikPoslat;
 import uzivatelskeRozhrani.obsahyOkna.HraCekani;
 import uzivatelskeRozhrani.obsahyOkna.HraOtazka;
+import uzivatelskeRozhrani.obsahyOkna.HraVyhodnoceni;
+import uzivatelskeRozhrani.obsahyOkna.Pripojovatko;
 
 public class StavitelObsahuOkna {
 
@@ -51,60 +57,67 @@ public class StavitelObsahuOkna {
         return scena;
     }
 
-    /*
-       ** Sestavi vse potrebne pro prihlaseni uzivatele - jedna se o uvodni obrazovku
-     
-    public BorderPane sestavBorderPaneUvodniObrazovka() {
+   public Pripojovatko getPripojovatko(int vysledek){
+       Pripojovatko pripojovatko = new Pripojovatko(vysledek);
+       
+        pripojovatko.konec.setOnAction((ActionEvent event) -> {
+            setAkceUkoncit();
+            
+        });
         
-        okno = new BorderPane();
-        okno.setCenter(getPrihlasovatko(0));
+        pripojovatko.pripoj.setOnAction((ActionEvent event) -> {
+            System.out.println("Připojeni aplikace.");
+            String ip=pripojovatko.getIpText();
+            String port = pripojovatko.getPortText();
+            System.out.println("ip je " + ip  + " port je " + port);
+            int portCislo = stringToInt(port);
+            if ((portCislo>65535)|| (portCislo<0)){
+                 prostrednikPos.getPohled().prepniSe(IPohled.PRIPOJENI_CHYBA_PORTU);
+                System.out.println("Port musí být číslo od 0 do 65535!");
+            }
+            else{
+                
+                 try {
+                     System.out.println("jdem sf");
+                      Socket socket = new Socket(ip,portCislo);
+                       System.out.print("Pripojeno na : " + socket.getInetAddress().toString());
+                       prostrednikPos.tcpOdesilac = new TcpOdesilac(socket, 30, prostrednikPos);
+                       prostrednikPos.tcpPrijimac = new TcpPrijmac(socket, 30, prostrednikPos);
+                       prostrednikPos.tcpOdesilac.setDaemon(true);
+                       prostrednikPos.tcpPrijimac.setDaemon(true);
+                       prostrednikPos.tcpOdesilac.start();
+                       prostrednikPos.tcpPrijimac.start();
+                       prostrednikPos.getPohled().prepniSe(IPohled.PRIHLASENI);
+                  } catch (IOException ex) {
+                     System.err.println("Pripojeni selhalo, zadejte prosim IP adresu a port lépe.");
+                     prostrednikPos.getPohled().prepniSe(IPohled.PRIPOJENI_CHYBA);
+                    return;
+                 }
+                
+             
+            }
+            
+        });
         
-        return okno;
-    }*/
+        
+        return pripojovatko;
+   }
 
     public Prihlasovatko getPrihlasovatko(int opakovani) {
         Prihlasovatko prihlasovatko = new Prihlasovatko(opakovani);
         
+        prihlasovatko.registrovat.setOnAction((ActionEvent event) -> {
+            setAkcePrihlaseni("1|", prihlasovatko);
+        });
+        
         prihlasovatko.prihlasit.setOnAction((ActionEvent event) -> {
-            String jmeno, heslo;
-            jmeno = prihlasovatko.getJmeno();
-            heslo = prihlasovatko.getHeslo();
-            //vyber sifrovaci metody podle zvoleneho radiobuttonu
-            if ((jmeno.length() != 0) && (heslo.length() != 0)) {
-                //zde doplnit zamek lepe
-                if (prostrednikPos.getZamekData() == 0) {
-                    prostrednikPos.setZamekData(1);
-                    System.out.println("chci poslat: " + "0|" + jmeno + "|" + heslo);
-                    prostrednikPos.setData("0|" + jmeno + "|" + heslo);
-                    //  prostrednikPos.setCekajData(1);
-                    prostrednikPos.setZamekData(2);
-                    
-                    prihlasovatko.setVysledek("čeká se na vyhodnocení přihlášení" + prostrednikPos.getCekajData());
-                    /*     while((prostrednikPos.getZamekData() != 3)){
-                    try {
-                    Thread.sleep(100);
-                    } catch (InterruptedException ex) {
-                    Logger.getLogger(Okno.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    }
-                    prostrednikPos.setZamekData(1);
-                    if (prostrednikPos.getData().compareTo("0")==0){
-                    vysledek.setText("Prihlaseni neprobehlo, mozna jste zadali duplicidni jmeno.");
-                    prostrednikPos.setData("");
-                    prostrednikPos.setZamekData(0);
-                    }
-                    else if (prostrednikPos.getData().compareTo("1") == 0){
-                    System.out.println("prihlaseni ok");
-                    prostrednikPos.setData("");
-                    prostrednikPos.setZamekData(0);
-                    okno.setLeft(getSpodniPanel());
-                    }*/
-                    
-                } else {
-                    System.out.println("zamceno " + prostrednikPos.getZamekData());
-                }
-                
-            }
+            setAkcePrihlaseni("0|", prihlasovatko);
+        });
+        
+        
+        prihlasovatko.konec.setOnAction((ActionEvent event) -> {
+            setAkceUkoncit();
+            
         });
         
         return prihlasovatko;
@@ -116,15 +129,17 @@ public class StavitelObsahuOkna {
          Start start = new Start();
         
           start.startuj.setOnAction((ActionEvent event) -> {
-            if (prostrednikPos.getZamekData() == 0) {
-                prostrednikPos.setZamekData(1);
-                prostrednikPos.setData("2");
-                prostrednikPos.setZamekData(2);
-                prostrednikPos.getPohled().prepniSe(IPohled.HRA_CEKANI);
-            }
-            else{
-                System.out.println("start obsazeno");
-            }
+            setAkceStart();
+            
+        });
+          
+          start.odhlasit.setOnAction((ActionEvent event) -> {
+            setAkceOdhlasit();
+            
+        });
+        
+        start.ukoncit.setOnAction((ActionEvent event) -> {
+            setAkceUkoncit();
             
         });
         
@@ -135,25 +150,16 @@ public class StavitelObsahuOkna {
     
     public HraCekani getHraCekani(){
         HraCekani hraCekani = new HraCekani();
-        hraCekani.odhlasit.setOnAction((ActionEvent event) -> {
-            if (prostrednikPos.getZamekData() == 0) {
-                prostrednikPos.setZamekData(1);
-                prostrednikPos.setData("4|1");
-                prostrednikPos.setZamekData(2);
-            }
-            else{
-                System.out.println("HraCekani obsazeno");
-            }
-            
-        });
+        
         
         hraCekani.ukoncit.setOnAction((ActionEvent event) -> {
-            System.out.println("Ukonceni aplikace.");
-            System.exit(1);
+            setAkceUkoncit();
             
         });
         
-        
+        hraCekani.odhlasit.setOnAction((ActionEvent event) -> {
+             setAkceOdhlasit();
+        });
         return hraCekani;
     }
     
@@ -189,6 +195,7 @@ public class StavitelObsahuOkna {
                 prostrednikPos.setZamekData(1);
                 prostrednikPos.setData("3|" + od);
                 prostrednikPos.setZamekData(2);
+                prostrednikPos.getPohled().prepniSe(IPohled.HRA_CEKANI);
             }
             else{
                 System.out.println("HraOtazka obsazeno");
@@ -197,20 +204,12 @@ public class StavitelObsahuOkna {
         });
         
         hraOtazka.odhlasit.setOnAction((ActionEvent event) -> {
-            if (prostrednikPos.getZamekData() == 0) {
-                prostrednikPos.setZamekData(1);
-                prostrednikPos.setData("4|1");
-                prostrednikPos.setZamekData(2);
-            }
-            else{
-                System.out.println("HraCekani obsazeno");
-            }
+           setAkceOdhlasit();
             
         });
         
         hraOtazka.ukoncit.setOnAction((ActionEvent event) -> {
-            System.out.println("Ukonceni aplikace.");
-            System.exit(1);
+           setAkceUkoncit();
             
         });
         
@@ -218,329 +217,109 @@ public class StavitelObsahuOkna {
     }
     
    
-
-    /*
-	 * Sestaví připravené komponenty do jednoho okna
-     */
-    public Parent sestavDoBorderPane() {
-
-        okno = new BorderPane();
-        //přidá připravené komponenty na určenou pozici
-        okno.setCenter(getNeutralniPane());
-        okno.setRight(getPravyPane());
-        okno.setLeft(getRadioButtony());
-        okno.setBottom(getSpodniPanel());
-        okno.setTop(getHorniPane());
-
-        return okno;
+    public HraVyhodnoceni getHraVyhodnoceni(){
+        int vyhodnoceni = prostrednikPos.getVysledek();
+        System.out.println("Jsem v Stavitel obsahu getHraVyhodnoceni a vysledek je " + vyhodnoceni);
+        HraVyhodnoceni hraVyhodnoceni = new HraVyhodnoceni(vyhodnoceni);
+       
+        hraVyhodnoceni.odhlasit.setOnAction((ActionEvent event) -> {
+           setAkceOdhlasit();
+            
+        });
+        
+        hraVyhodnoceni.ukoncit.setOnAction((ActionEvent event) -> {
+            setAkceUkoncit();
+            
+        });
+        
+        
+        hraVyhodnoceni.start.setOnAction((ActionEvent event) -> {
+            setAkceStart();
+            
+        });
+        
+        return hraVyhodnoceni;
     }
 
-    /*
-	 * Připraví komponentu TextArea
-     */
-    private Node getTextArea() {
-
-        TextArea text = new TextArea("");
-
-        //nastaví preferované hodnoty počtu řádků a sloupců
-        text.setPrefColumnCount(10);
-        text.setPrefRowCount(25);
-
-        return text;
+    
+    
+    private static int stringToInt(String param) {
+        try {
+                return Integer.valueOf(param);
+        } catch(NumberFormatException e) {
+                return -1;
+        }
     }
-
-    /**
-     * Vytvori komponentu PravyPane, ve které jsou všechna tlačítka. Stará se
-     * také o jejich obsluhu.
-     *
-     * @return
-     */
-    private Node getPravyPane() {
-        VBox buttony = new VBox();
-        buttony.setSpacing(30);
-        buttony.setPadding(new Insets(30));
-
-        //tvorba tlacitek
-        Button sifruj = new Button("Šifruj");
-        Button desifruj = new Button("Dešifruj");
-        Button frek = new Button("Frekvenční analýza");
-        Button poslat = new Button("Odeslat odpověd");
-        //prida akci k tlacitku sifruj
-        sifruj.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                //vyber sifrovaci metody podle zvoleneho radiobuttonu
-                switch (indexSifry) {
-
-                    /*case 1: Atbas a = new Atbas();
-    					vystup.setText(a.vymen(vstup.getText().toUpperCase()));
-    					break;*/
- /*case 2:	Cezar c = new Cezar(vstup.getText().toUpperCase());
-    					int posunout = (int) posun.getValue();
-    					vystup.setText(c.sifruj(vstup.getText().toUpperCase(), posunout));
-    					break;/*
-    			case 3: Albert al = new Albert(vstup.getText().toUpperCase());
-    					vystup.setText(al.sifruj((int)posun.getValue(),(int) posun2.getValue(), true));
-    					break;
-    			case 4: Viegener v = new Viegener();
-    					vystup.setText(v.desifruj(vstup.getText().toUpperCase(), klic.getText().toUpperCase(), true));
-    					break;*/
-                }
-
-            }
-        });
-        //prida akci k tlacitku desifruj
-        desifruj.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                //		FrekvencniAnalyza f = new FrekvencniAnalyza();
-                ///f.setAktualni(vstup.getText().toUpperCase());
-                //vyber sifrovaci metody podle zvoleneho radiobuttonu
-
-                switch (indexSifry) {
-                    /*case 1: Atbas a = new Atbas();
-		    					vystup.setText(a.vymen(vstup.getText().toUpperCase()));
-		    					break;*/
- /*case 2:	Cezar c = new Cezar(vstup.getText().toUpperCase(), f.getAktualni());
-		    					int posunout = auto.isSelected() ? c.najdiPosun() : (int) posun.getValue();
-		    					vystup.setText(c.desifruj(vstup.getText().toUpperCase(), posunout));
-		    					if (auto.isSelected()){
-		    						posunl.setText(""+c.getposs());
-		    					}
-		    					break;/*
-		    			case 3: Albert al = new Albert(vstup.getText().toUpperCase());
-		    					if (auto.isSelected()){
-		    						vystup.setText(al.desifrujAuto());
-		    						posunl.setText("" + al.getPosunL());
-		    						posuns.setText("" + al.getPosunP());
-		    					}
-		    					else{
-		    						vystup.setText(al.sifruj((int)posun.getValue(),(int) posun2.getValue(), false));
-		    					}
-		    					break;
-		    			case 4: Viegener v = new Viegener();
-		    					vystup.setText(v.desifruj(vstup.getText().toUpperCase(), klic.getText().toUpperCase(), false));
-		    					break;
-		    			case 5: Alex ale = new Alex();
-		    					vystup.setText(ale.desifruj(vstup.getText().toUpperCase()));
-		    					break;*/
-                }
-            }
-        });
-        //prida akci k tlacitku frek
-        frek.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                /*FrekvencniAnalyza frekvencniAnalyza = new FrekvencniAnalyza();
-		    	frekvencniAnalyza.setAktualni(vstup.getText().toUpperCase());
-		    	/*Graf graf = new Graf("Frekvenční analýza - aktuální", frekvencniAnalyza.getAktualni());
-		    	graf.pack();
-		        RefineryUtilities.centerFrameOnScreen(graf);
-		        graf.setVisible(true);
-		        Graf grafCestina = new Graf("Frekvenční analýza - čeština", frekvencniAnalyza.getCestina());
-		    	grafCestina.pack();
-		        RefineryUtilities.centerFrameOnScreen(graf);
-		        grafCestina.setVisible(true);*/
-
-            }
-        });
-
-        buttony.getChildren().addAll(sifruj, desifruj, frek);
-        return buttony;
+    
+    private String odPajpuj(String s){
+        String[] p=s.split("\\|");
+      
+        int delka = p.length;
+         // System.out.println("s  " + s +" delka" + delka);
+        String navrat="";
+        for(int i=0;i<delka-1;i++){
+             
+          navrat= navrat + p[i];
+        }
+        return navrat;
     }
+    
+    private void setAkceOdhlasit(){
+         if (prostrednikPos.getZamekData() == 0) {
+                prostrednikPos.setZamekData(1);
+                prostrednikPos.setData("4|1");
+                prostrednikPos.setZamekData(2);
+                prostrednikPos.getPohled().prepniSe(IPohled.PRIHLASENI);
+            }
+            else{
+                System.out.println("HraCekani obsazeno");
+            }
+    }
+    
+    private void setAkceUkoncit(){
+         System.out.println("Ukonceni aplikace.");
+            
+            System.exit(0);
+    }
+    
+    private void setAkceStart(){
+        if (prostrednikPos.getZamekData() == 0) {
+                prostrednikPos.setZamekData(1);
+                prostrednikPos.setData("2");
+                prostrednikPos.setZamekData(2);
+                prostrednikPos.getPohled().prepniSe(IPohled.HRA_CEKANI);
+            }
+            else{
+                System.out.println("start obsazeno");
+            }
+    }
+    
 
-    /**
-     * /*
-     * Vytvoří panel s radiobuttons a levé straně okna
-     */
-    private Node getRadioButtony() {
 
-        VBox radioButtony = new VBox();
-
-        //skupina, aby sel oznacit jen jeden RB ze skupiny
-        ToggleGroup toggleGroupTG = new ToggleGroup();
-
-        //vytvoreni noveho RB s moznosti
-        RadioButton atbas = new RadioButton("ATBAŠ");
-        RadioButton cezar = new RadioButton("Cézarova šifra");
-        RadioButton albert = new RadioButton("Albertiho šifra");
-        RadioButton viegener = new RadioButton("Viegenerova šifra");
-        RadioButton alex = new RadioButton("Alexova šifra");
-
-        //prida do skupiny kvuli klikani
-        atbas.setToggleGroup(toggleGroupTG);
-        cezar.setToggleGroup(toggleGroupTG);
-        albert.setToggleGroup(toggleGroupTG);
-        viegener.setToggleGroup(toggleGroupTG);
-        alex.setToggleGroup(toggleGroupTG);
-
-        radioButtony.getChildren().add(atbas);
-        radioButtony.getChildren().add(cezar);
-        radioButtony.getChildren().add(albert);
-        radioButtony.getChildren().add(viegener);
-        radioButtony.getChildren().add(alex);
-
-        //mezery mezi RB a vycentrovani na vysku
-        radioButtony.setSpacing(20);
-        radioButtony.setPadding(new Insets(20));
-
-        //prida akce k zaskrnuti
-        toggleGroupTG.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-            @Override
-            public void changed(ObservableValue<? extends Toggle> ov, Toggle t, Toggle t1) {
-
-                RadioButton chk = (RadioButton) t1.getToggleGroup().getSelectedToggle(); // Cast object to radio button
-                
-                //zde budu překreslovat panel
-                okno.setCenter(new Button(chk.getText()));
-
-                if (chk.getText().equals("ATBAŠ")) {
-                    okno.setCenter(getNeutralniPane());
-                    indexSifry = 1;
-                } else if (chk.getText().equals("Cézarova šifra")) {
-                    okno.setCenter(getCezarPane());
-                    indexSifry = 2;
-                } else if (chk.getText().equals("Albertiho šifra")) {
-                    okno.setCenter(getAlbertPane());
-                    indexSifry = 3;
-                } else if (chk.getText().equals("Viegenerova šifra")) {
-                    okno.setCenter(getViegenerPane());
-                    indexSifry = 4;
+    private void setAkcePrihlaseni(String s, Prihlasovatko prihlasovatko){
+        String jmeno, heslo;
+        jmeno = prihlasovatko.getJmeno();
+        heslo = prihlasovatko.getHeslo();
+        //vyber sifrovaci metody podle zvoleneho radiobuttonu
+        jmeno=odPajpuj(jmeno);
+        heslo=odPajpuj(heslo);
+       // if ((jmeno.length() != 0) && (heslo.length() != 0)) {
+        //zde doplnit zamek lepe
+            if (prostrednikPos.getZamekData() == 0) {
+                prostrednikPos.setZamekData(1);
+                System.out.println("chci poslat: " + s + jmeno + s + heslo);
+                prostrednikPos.setData(s + jmeno + "|" + heslo);
+                //  prostrednikPos.setCekajData(1);
+                prostrednikPos.setZamekData(2);
+               
+                prihlasovatko.setVysledek("Čeká se na vyhodnocení" + prostrednikPos.getCekajData());
+                    
                 } else {
-                    okno.setCenter(getNeutralniPane());
-                    indexSifry = 5;
+                    System.out.println("zamčeno " + prostrednikPos.getZamekData());
                 }
-            }
-        });
-
-        return radioButtony;
-    }
-
-    /*
-	 * Vytvoří spodní panel
-     */
-    private Node getSpodniPanel() {
-        BorderPane spodni = new BorderPane();
-        spodni.setTop(new Label("Výstup programu:"));
-        spodni.setCenter(vystup);
-        return spodni;
-    }
-
-    /**
-     * Vytvoří horní panel
-     *
-     * @return
-     */
-    private Node getHorniPane() {
-        BorderPane horni = new BorderPane();
-        vstup.setPrefSize(100, 900);
-        vstup.setMaxSize(800, 150);
-        horni.setTop(new Label("Zadejte prosím vstupní řetězec:"));
-        horni.setCenter(vstup);
-
-        return horni;
-    }
-
-    /**
-     * Vytvoří panelm ktery používam pri volbe cezarovi sifry
-     *
-     * @return
-     */
-    private Node getCezarPane() {
-        VBox stred = new VBox();
-        stred.setSpacing(10);
-        stred.setPadding(new Insets(10));
-        //popisky
-        Label label1 = new Label("Zvolte prosím parametry šifrování \n či dešifrování:");
-        Label label2 = new Label("Zadejte prosím posun: ");
-        stred.setAlignment(Pos.CENTER);
-        //vytvori spinner pro zadani posunu
-        posun = new Spinner(0, 40, 1);
-        posun.setEditable(true);
-        posun.setMaxWidth(50);
-
-        //vytvori checkbox
-        auto = new CheckBox();
-        auto.setText("Zkusit prolomit automaticky.");
-        auto.setSelected(false);
-        posunl.setMaxSize(20, 20);
-
-        stred.getChildren().addAll(label1, label2, posun, auto, new Label("Vypočtený posun:"), posunl);
-
-        return stred;
-    }
-
-    /**
-     * Vytvori panel, ktery pouzívam pri volbě Albertovo sifry.
-     *
-     * @return
-     */
-    private Node getAlbertPane() {
-        VBox stred = new VBox();
-        stred.setSpacing(1);
-        stred.setPadding(new Insets(1));
-        //popisky
-        Label label1 = new Label("Zvolte prosím parametry šifrování \n či dešifrování:");
-        Label label2 = new Label("Zadejte prosím posun lichých písmen.");
-        Label label3 = new Label("Zadejte prosím posun sudých písmen.");
-        stred.setAlignment(Pos.CENTER);
-        //spinnnery
-        posun = new Spinner(0, 40, 1);
-        posun.setEditable(true);
-        posun.setMaxWidth(100);
-        posun2 = new Spinner(0, 40, 1);
-        posun2.setEditable(true);
-        posun2.setMaxWidth(100);
-        auto = new CheckBox();
-        auto.setText("Zkusit prolomit automaticky.");
-        auto.setSelected(false);
-        Label ll = new Label("Vypočtený posun lichých znaků:");
-        posunl.setMaxSize(20, 20);
-        posuns.setMaxSize(20, 20);
-        Label ls = new Label("Vypočtený posun sudýých znaků:");
-        stred.getChildren().addAll(label1, label2, posun, label3, posun2, auto, ll, posunl, ls, posuns);
-
-        return stred;
-    }
-
-    /**
-     * Vytvori panel, ktery pouzívam pri volbe Viegenerovy sifry.
-     *
-     * @return
-     */
-    private Node getViegenerPane() {
-        VBox stred = new VBox();
-        stred.setSpacing(20);
-        stred.setPadding(new Insets(20));
-        stred.setAlignment(Pos.CENTER);
-        //popisky
-        Label label1 = new Label("Zvolte prosím parametry šifrování \n či dešifrování:");
-        Label label2 = new Label("Zadejte prosím klíčové slovo:");
-        //textove pole pro zadani klice
-        klic = new TextArea();
-
-        stred.getChildren().addAll(label1, label2, klic);
-
-        return stred;
-    }
-
-    /**
-     * Vytvori panel, ktery pouzívam pri volbe jine sifry a pri spusteni
-     * aplikace.
-     *
-     * @return
-     */
-    private Node getNeutralniPane() {
-        VBox stred = new VBox();
-        ///Image im = new Image("pokenom.gif");
-        // ImageView m= new ImageView(im);
-
-        stred.setAlignment(Pos.CENTER);
-
-        // stred.getChildren().addAll(m);
-        stred.getChildren().addAll(new Label("Vyčkejte prosím než hra začne."), new Label("Čeká se na připojení protihráče."));
-
-        return stred;
+                
+       
+       
     }
 
 }

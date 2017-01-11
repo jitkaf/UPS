@@ -6,18 +6,22 @@
 package uzivatelskeRozhrani.obsahyOkna;
 
 import java.awt.Font;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 /**
  *
  * @author jitka
  */
-public class HraCekani extends BorderPane{
+public class HraCekani extends VBox{
     
      
 
@@ -25,33 +29,43 @@ public class HraCekani extends BorderPane{
     public final Button ukoncit;
 
     public HraCekani(){
-        this.setTop(getHorni());
-        this.setCenter(getStred());
-        odhlasit = new Button ("Odhlasit");
-        ukoncit = new Button ("Ukoncit");
-        this.setBottom(getSpodek());
+        this.setSpacing(25);
+        this.setPadding(new Insets(30,40,20,40));
+        
+        odhlasit = new Button ("Odhlásit");
+        ukoncit = new Button ("Ukončit");
+        this.getChildren().addAll(getHorni(), getStred(), getSpodek(), getPodpis());
     }
 
 
     private Node getHorni(){
-        Text a = new Text("                       DuelKvíz");
-        a.setFont(javafx.scene.text.Font.font(25));
-        TextArea text = new TextArea(a.getText());
-        return text;
+        Text a = new Text("             DuelKvíz");
+        a.setFont(javafx.scene.text.Font.font(30));
+        a.setFill(Color.BLUE);
+       
+        return a;
     }
 
     private Node getStred(){
-        TextArea text = new TextArea("Hrajete hru DuelKvíz, která Vám přináší velké potěšení. \n  Nyní je potřeba chvililinku počkat na odevzdvu serveru či přihlášení soupeře. \n "
-                + " V tomto čase se mužete zamyslet nad svým životem a přispět na charitu.");
+        Label text = new Label("    Hrajete hru DuelKvíz, která Vám přináší velké potěšení. \n \n    Nyní je potřeba chvililinkuku počkat na odevzvu serveru \n    nebo přihlášení soupeře. \n \n"
+                + "    V tomto čase se mužete zamyslet nad svým životem.");
         
         return text;
     }
     
     private Node getSpodek(){
            HBox tlacitka = new HBox();
-           tlacitka.setSpacing(50);
+           tlacitka.setPadding(new Insets(50));
+           tlacitka.setSpacing(80);
+           odhlasit.setMinSize(100, 40);
+           ukoncit.setMinSize(100,40);
            tlacitka.getChildren().addAll(odhlasit,ukoncit);
            return tlacitka;
 
+    }
+    
+    private Node getPodpis(){
+        Label l = new Label("    Tato hra je vyvíjena jako semestrální práce KIV/UPS. \n\n                        @Jitka Fürbacherová");
+        return l;
     }
 }

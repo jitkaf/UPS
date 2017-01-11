@@ -25,6 +25,7 @@ public class ProstrednikPoslat {
     private String acko="";
     private String becko="";
     private String cecko="";
+    private int vysledek=0;
     
     public TcpPrijmac tcpPrijimac;
     public TcpOdesilac tcpOdesilac;
@@ -116,5 +117,13 @@ public class ProstrednikPoslat {
     
     public String getCecko(){
         return cecko;
+    }
+    
+    public void setVysledek(int vysledek){
+        this.vysledek = vysledek;
+    }
+    
+    public int getVysledek(){
+        return vysledek;
     }
 }

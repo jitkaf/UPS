@@ -39,10 +39,28 @@ public class KvizScena extends Scene implements IPohled {
             System.out.println("Jsem v prepni se idpohled je: " + idPohled);
             switch (idPohled) {
                 
+                case IPohled.PRIPOJENI:
+                    this.setObsah(stavitel.getPripojovatko(0));
+                    break;
+                case IPohled.PRIPOJENI_ZNOVU:
+                    this.setObsah(stavitel.getPripojovatko(1));
+                    break;  
+                case IPohled.PRIPOJENI_CHYBA_PORTU:
+                    this.setObsah(stavitel.getPripojovatko(2));
+                    break;
+                case IPohled.PRIPOJENI_CHYBA:
+                    this.setObsah(stavitel.getPripojovatko(3));
+                    break;
                 case IPohled.PRIHLASENI:
                     this.setObsah(stavitel.getPrihlasovatko(0));
                     break;
-                case IPohled.PRIHLASENI_CHYBA:
+                case IPohled.PRIHLASENI_DUPLICITA:
+                    this.setObsah(stavitel.getPrihlasovatko(3));
+                    break;
+                case IPohled.PRIHLASENI_HESLO:
+                    this.setObsah(stavitel.getPrihlasovatko(2));
+                    break;    
+                case IPohled.PRIHLASENI_JMENO:
                     this.setObsah(stavitel.getPrihlasovatko(1));
                     break;
                 case IPohled.START:
@@ -54,7 +72,10 @@ public class KvizScena extends Scene implements IPohled {
                 case IPohled.HRA_OTAZKA:
                     this.setObsah(stavitel.getHraOtazka());
                     break;
-                    
+                case IPohled.HRA_VYHODNOCENI:
+                    System.out.println("jdu do vyhodnoceni");
+                    this.setObsah(stavitel.getHraVyhodnoceni());
+                    break;
                     
                 //  case IPohled.KONEC_HRY: this.layout.setCenter(...); break;
                 default:

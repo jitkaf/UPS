@@ -8,19 +8,21 @@ package uzivatelskeRozhrani.obsahyOkna;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 /**
  *
  * @author jitka
  */
-public class HraOtazka extends BorderPane {
+public class HraOtazka extends VBox {
     
     private TextArea textOtazky;
     private Text textA;
@@ -39,20 +41,24 @@ public class HraOtazka extends BorderPane {
         textA = new Text (acko);
         textB = new Text(becko);
         textC = new Text(cecko);
-        textOtazky = new TextArea (otazka);
-        textOtazky.setEditable(false);
-        this.setTop(textOtazky);
-        this.setCenter(getProstredek());
-        
+        this.setSpacing(50);
+        this.setPadding(new Insets(40));
+      
         odpovedet = new Button ("Odpovědět");
-        odpovedet.setPrefSize(100, 30);
         odhlasit = new Button ("Odhlasit");
         ukoncit = new Button ("Ukoncit");
         
-        this.setBottom(getSpodek());
+        this.getChildren().addAll(getHorni(otazka), getProstredek(), getSpodek());
         
     }
     
+    private Node getHorni(String textOtazky){
+       
+       Text text = new Text(textOtazky);
+       text.setFont(javafx.scene.text.Font.font(25));
+       text.setFill(Color.MEDIUMVIOLETRED);
+        return text;
+    }
     
     public Node getProstredek(){
         VBox radioButtony = new VBox();
@@ -69,8 +75,8 @@ public class HraOtazka extends BorderPane {
         
         radioButtony.getChildren().addAll(a,b,c);
         
-        radioButtony.setSpacing(20);
-        radioButtony.setPadding(new Insets(20));
+        radioButtony.setSpacing(40);
+        radioButtony.setPadding(new Insets(50));
         
         return radioButtony;
         
@@ -79,7 +85,11 @@ public class HraOtazka extends BorderPane {
     
     private Node getSpodek(){
         HBox tlacitka = new HBox();
-        tlacitka.setSpacing(50);
+         tlacitka.setPadding(new Insets(5));
+         tlacitka.setSpacing(50);
+         odpovedet.setMinSize(100, 40);
+         odhlasit.setMinSize(100, 40);
+         ukoncit.setMinSize(100,40);
         tlacitka.getChildren().addAll(odhlasit,odpovedet,ukoncit);
         return tlacitka;
         

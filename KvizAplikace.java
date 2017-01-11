@@ -25,27 +25,12 @@ public class KvizAplikace extends Application {
 
     //ups
     ProstrednikPoslat prostrednikPos;
-    String sentence;
-    String modifiedSentence;
-    Socket socket;
-    int delkaZpravy = 255;
+   
 
-    OutputStreamWriter wr;
-    int pom = 3;
-    int zamek = 0;
-    int vypsano = 0;
-    int stridani = 0;
 
     @Override
     public void start(Stage s) throws Exception {
         
-        try {
-            socket = new Socket("127.0.0.1", 20001);
-            System.out.print("Pripojeno na : " + socket.getInetAddress().toString());
-        } catch (IOException ex) {
-            System.err.println("Pripojeni selhalo, program byl ukoncen.");
-            return;
-        }
         
         
         prostrednikPos = new ProstrednikPoslat();
@@ -55,7 +40,7 @@ public class KvizAplikace extends Application {
         KvizScena kvizScena = new KvizScena(prostrednikPos);
         prostrednikPos.setPohled(kvizScena);
         System.out.println("ipohled ze start " + IPohled.PRIHLASENI);
-        kvizScena.prepniSe(IPohled.PRIHLASENI);
+        kvizScena.prepniSe(IPohled.PRIPOJENI);
         
         
         
@@ -63,20 +48,15 @@ public class KvizAplikace extends Application {
         s.setTitle("Vědomostní kvíz");
         s.setScene(kvizScena);
         //s.setScene(new Scene(new AnchorPane(new Button("Ahoj"))));
-        s.setMinHeight(750);
-        s.setMinWidth(700);
-        s.setMaxHeight(800);
-        s.setMaxWidth(750);
+        s.setMinHeight(500);
+        s.setMinWidth(500);
+        s.setMaxHeight(600);
+        s.setMaxWidth(550);
         s.setY(100);
         s.show();
         
         
-        prostrednikPos.tcpOdesilac = new TcpOdesilac(socket, delkaZpravy, prostrednikPos);
-        prostrednikPos.tcpPrijimac = new TcpPrijmac(socket, delkaZpravy, prostrednikPos);
         
-        //Okno.launch(Okno.class);
-        prostrednikPos.tcpOdesilac.start();
-        prostrednikPos.tcpPrijimac.start();
         // t3.start();
         /**
         try {
