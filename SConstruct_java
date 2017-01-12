@@ -1,0 +1,6 @@
+env = Environment()
+env['ENV']['LANG'] = 'en_US.UTF-8'
+
+env.Java(target='build', source='src');
+env.Jar(target = "client.jar", source=["build", "MANIFEST.MF"], JARCHDIR='build')
+
