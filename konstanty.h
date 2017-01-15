@@ -16,24 +16,22 @@
 
 #define MAX_KLIENTU 10
 #define MAX_HER 10
-#define  MAX_DELKA_JMENA 10
-#define  DELKA_ZPRAVY 255
+#define  MAX_DELKA_JMENA 20
 #define DELKA_ODPOVED 1
 #define PORT 20001
 
 #define POCET_OTAZEK 10
 #define DELKA_OZAZKY 100
 #define DELKA_MOZNOSTI 10
+/*stavy stavoveho diagramu*/
 #define PRAZDNA_HRA 0
 #define CEKA_NA_PRIPOJENI_Hrace 1
 #define HRAJE_SE 2
 #define DOHRANO 3
-
-
+/*pocet vadnych zprav ktere muze klient poslat nez je odpojen*/
+#define TOLERANCE 1
 #define PRAZDNE_JMENO 0
-
-
-
+#define MAX_DELKA_ZPRAVY_KLIENT 50
 
 
 #endif /* KONSTANTY_H */

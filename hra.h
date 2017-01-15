@@ -20,7 +20,6 @@ struct s_hra
 {
     int id_hrac_jedna;
     int id_hrac_dva;
-    int cislo_otazky;
     int score_hrac_jedna;
     int score_hrac_dva;
     int stav;

@@ -23,10 +23,5 @@ struct s_otazka{
 struct s_otazka* otazky;
 
 int herni_otazky_nacti_otazky();
-/*int herni_otazky_losuj_otazku();
-int herni_otazky_odpoved(int id_otazky);
-char *herni_otazky_text(int id_otazky);*/
-
-
 
 #endif /* HERNI_OTAZKY_H */

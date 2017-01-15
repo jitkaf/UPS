@@ -7,10 +7,7 @@ struct tcp_server
 
 };
 
-int tcp_server_send_message(int fd, char * msg, int length);
-
-
-
+int tcp_server_send_message(int fd, char * msg);
 
 
 #endif // TCP_SERVER_H

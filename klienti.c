@@ -3,6 +3,7 @@
 #include <string.h>
 #include "klient.h"
 #include "klienti.h"
+#include "hra.h"
 #include "globalni_promenne.h"
 
 int funkce (){
@@ -95,22 +96,52 @@ int klienti_pridej_klienta(int fd){
    
 }
 
-int klienti_odhlas_klienta(int id){
+/**
+ * Odhlásí klienta - nastaví mu příznak že je odhlášený
+ * @param id
+ * @param fd
+ * @param client_socks
+ * @return 
+ */
+int klienti_odhlas_klienta(int id,int fd, fd_set *client_socks){
     (GLOBAL_klienti +id)->stav_stavoveho_diagramu = 5;
+     close(fd);
+    FD_CLR(fd, client_socks );
     return 0;
 }
 
-int klienti_odeber_klienta(int id){
+/**
+ * Odebere klienta z pole klientu. Uplně ho tím pádem zapomene. Sesype klienty.
+ * @param id
+ * @param fd
+ * @param client_socks
+ * @return 
+ */
+int klienti_odeber_klienta(int id, int fd, fd_set *client_socks){
     int i;
-    globalni_promenne_odeber_jmeno((GLOBAL_klienti + id)->jmeno_hrace);
+     if ((GLOBAL_hry + (GLOBAL_klienti + id)->herni_mistnost)->id_hrac_dva == id) {
+         (GLOBAL_hry + (GLOBAL_klienti + id)->herni_mistnost)->id_hrac_dva = -1; //taky tu musi bejt nejakej zamek urcite
+     } else if ((GLOBAL_hry + (GLOBAL_klienti + id)->herni_mistnost)->id_hrac_jedna == id) {
+         (GLOBAL_hry + (GLOBAL_klienti + id)->herni_mistnost)->id_hrac_jedna = -1;
+     }
+    if (strcmp((GLOBAL_klienti +id)->jmeno_hrace,"") != 0 ){
+        printf("jmeno bude odebrano \n");
+          globalni_promenne_odeber_jmeno((GLOBAL_klienti + id)->jmeno_hrace);
+    }
+    printf("neni jmeno k odebrani \n");
+    
     for(i=id; i <GLOBAL_pocet-1; i++){
         //tady je asi chyba nebot zustane nekde ulozenej starej fd i po odpojeni*/
         memcpy(GLOBAL_klienti + i, GLOBAL_klienti + i+1, sizeof(struct klient));
         
     }
-   
+    close(fd);
+    FD_CLR( fd, client_socks );
+   // free(GLOBAL_klienti + GLOBAL_pocet -1);
     //zde na toho posledniho zavolam free
     GLOBAL_pocet--;
+    
+   
     return 0;
 }
    

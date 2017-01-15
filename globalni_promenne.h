@@ -21,17 +21,15 @@ struct s_seznam_jmen{
     struct s_seznam_jmen* p_predchozi; 
 }s_seznam_jmen;
 
+/*seznam pouzitych jmen*/
 struct s_seznam_jmen *GLOBAL_p_prvni;
-//struct s_seznam_jmen *GLOBAL_p_posledni;
 
-
+/*pocet pripojenych klientu*/
 int GLOBAL_pocet;
-//klient GLOBAL_klienti[maxKlientu];
 
 struct s_hra * GLOBAL_hry;
+/*polepripojenych klientu*/
 struct klient * GLOBAL_klienti; 
-
-
 
 int globalni_promenne_inicializace();
 int globalni_promenne_pridej_jmeno(char *jmeno);
