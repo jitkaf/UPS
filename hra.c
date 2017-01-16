@@ -50,6 +50,7 @@ int hra_poprve(int a, struct s_hra *hra) {
  * @return 
  */
 int hra_vyhodnot_odpoved(struct s_hra *hra, int spravna_odpoved, int odpoved_jedna, int odpoved_dva) {
+    printf("odpoved jedna %d   odpoved dva %d    odpoved ok %d    \n", odpoved_jedna, odpoved_dva, spravna_odpoved);
     if (odpoved_jedna == spravna_odpoved) {
         hra->score_hrac_jedna++;
         return 1;

@@ -9,10 +9,10 @@ struct klient
     char *heslo;
     int doba_necinosti;
     int herni_mistnost;
-    int skore;
     int odpoved;
     int zamek_odpovedi;
     int stav_stavoveho_diagramu;
+    int stav_pred_odpojenim;
     int pocet_vadnych_zprav;
 }klient;
 
@@ -24,7 +24,7 @@ int klient_prirad_herni_mistnost(struct klient hrac, int mistnost);
 int klient_odeber_herni_misnost(struct klient hrac);
 int klient_odpoj(struct klient hrac);
 int klient_pripoj(struct klient hrac);
-int klient_generuj_heslo();
+
 int klient_nastav_odpoved(struct klient hrac, int odpoved);
 int klient_dej_odpoved_hrace(struct klient hrac);
 

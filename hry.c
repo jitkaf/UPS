@@ -74,6 +74,10 @@ int hry_vytvor_vlakno_hry(int id_hry) {
 
 /**
  * Vytvoří herní smyčku.
+ * Pošle vždy otázku připojeným hráčům a nachvíli se uspí, aby dostali prostor pro zaslání odpovědi.
+ * Je zde spousta nepěkných složitých podmínek, kterí slouží k ověření, zda jsou hráči připojeni a čekají na otázku, aby nedošlo k záměně
+ * klientů kvůli paraelnímu běhu.
+ * Tento složitý složeným systém podmínek by šel nahradit zámkem, to by ale zase zkomplikovalo "sesypávání" klientů při odpojení.
  * @param arg
  * @return 
  */
@@ -102,6 +106,8 @@ void *hry_smycka_vlakna(void *arg) {
         }
         int odpoved_jedna = -1;
         int odpoved_dva = -1;
+        printf ("skore hrac jedna %d\n", (GLOBAL_hry +id_hry)->score_hrac_jedna);
+        printf("skore hrac dva %d \n", (GLOBAL_hry +id_hry)->score_hrac_dva);
         if (((GLOBAL_hry + id_hry)->id_hrac_jedna) != -1) {
             (GLOBAL_klienti + (GLOBAL_hry + id_hry)->id_hrac_jedna)->zamek_odpovedi = 1;
             (GLOBAL_klienti + (GLOBAL_hry + id_hry)->id_hrac_jedna)->odpoved;
@@ -129,7 +135,7 @@ void *hry_smycka_vlakna(void *arg) {
     }
     (GLOBAL_klienti + (GLOBAL_hry + id_hry)->id_hrac_jedna)->zamek_odpovedi = 1;
     (GLOBAL_klienti + (GLOBAL_hry + id_hry)->id_hrac_dva)->zamek_odpovedi = 1;
-    if ((GLOBAL_klienti + (GLOBAL_hry + id_hry)->id_hrac_jedna)->skore > (GLOBAL_klienti + (GLOBAL_hry + id_hry)->id_hrac_dva)->skore) {
+    if ((GLOBAL_hry + id_hry)->score_hrac_jedna > (GLOBAL_hry + id_hry)->score_hrac_dva) {
         if ((((GLOBAL_hry + id_hry)->id_hrac_jedna) != -1) && ((((GLOBAL_klienti + (((GLOBAL_hry + id_hry)->id_hrac_jedna)))->stav_stavoveho_diagramu ==3)) || ((GLOBAL_klienti + (((GLOBAL_hry + id_hry)->id_hrac_jedna)))->stav_stavoveho_diagramu == 1))) {
             fd_prvni = (GLOBAL_klienti + (GLOBAL_hry + id_hry)->id_hrac_jedna)->fd;
             tcp_server_send_message(fd_prvni, "5|1");
@@ -139,7 +145,7 @@ void *hry_smycka_vlakna(void *arg) {
             tcp_server_send_message(fd_druhej, "5|2");
         }
     }
-    if ((GLOBAL_klienti + (GLOBAL_hry + id_hry)->id_hrac_jedna)->skore < (GLOBAL_klienti + (GLOBAL_hry + id_hry)->id_hrac_dva)->skore) {
+    else if  ((GLOBAL_hry + id_hry)->score_hrac_jedna < (GLOBAL_hry + id_hry)->score_hrac_dva) {
         if ((((GLOBAL_hry + id_hry)->id_hrac_jedna) != -1) && ((((GLOBAL_klienti + (((GLOBAL_hry + id_hry)->id_hrac_jedna)))->stav_stavoveho_diagramu == 3)) || ((GLOBAL_klienti + (((GLOBAL_hry + id_hry)->id_hrac_jedna)))->stav_stavoveho_diagramu == 1))) {
             fd_prvni = (GLOBAL_klienti + (GLOBAL_hry + id_hry)->id_hrac_jedna)->fd;
             tcp_server_send_message(fd_prvni, "5|2");

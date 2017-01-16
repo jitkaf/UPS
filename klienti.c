@@ -28,6 +28,7 @@ int klient_znovu_prihlaseni(int fd, char *jmeno, char *heslo){
             (GLOBAL_klienti + i)->stav_stavoveho_diagramu=1;
             (GLOBAL_klienti + i)->doba_necinosti = 0;
             (GLOBAL_klienti + i)->fd = fd;
+            (GLOBAL_klienti + i)->stav_stavoveho_diagramu = (GLOBAL_klienti + i)->stav_pred_odpojenim;
              return 0; //overeni ok
         }
     }
@@ -104,6 +105,7 @@ int klienti_pridej_klienta(int fd){
  * @return 
  */
 int klienti_odhlas_klienta(int id,int fd, fd_set *client_socks){
+    (GLOBAL_klienti + id)->stav_pred_odpojenim = (GLOBAL_klienti + id)->stav_stavoveho_diagramu;
     (GLOBAL_klienti +id)->stav_stavoveho_diagramu = 5;
      close(fd);
     FD_CLR(fd, client_socks );

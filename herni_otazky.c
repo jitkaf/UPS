@@ -49,7 +49,7 @@ int herni_otazky_nacti_otazky() {
 
     (otazky + 5)->id_otazky = 6;
     (otazky + 5)->odpoved = 1;
-    memcpy((otazky + 5)->text, "8|První den v týdnu je:|pondělí|úterý|středa", 50);
+    memcpy((otazky + 5)->text, "8|První den v týdnu je:|pondělí|úterý|středa", 51);
 
     (otazky + 6)->id_otazky = 7;
     (otazky + 6)->odpoved = 3;

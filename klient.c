@@ -12,12 +12,12 @@ int klient_vytvor_klienta(struct klient *kli, int fd) {
     kli->jmeno_hrace = calloc(MAX_DELKA_JMENA, 1);
     memcpy(kli->jmeno_hrace, "", 1);
     kli->heslo = calloc(MAX_DELKA_JMENA, 1);
-    kli->skore = 0;
-
+   
     kli->odpoved = 0;
     kli->stav_stavoveho_diagramu = 0;
     kli->zamek_odpovedi = 0;
     kli->pocet_vadnych_zprav = 0;
+    kli->stav_pred_odpojenim = 0;
     printf("Vytářím hráče se zatím neznámým jménem a s fd %d \n", fd);
     return 0;
 }

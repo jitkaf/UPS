@@ -18,7 +18,7 @@
 #define MAX_HER 10
 #define  MAX_DELKA_JMENA 20
 #define DELKA_ODPOVED 1
-#define PORT 20001
+#define PORT 20004
 
 #define POCET_OTAZEK 10
 #define DELKA_OZAZKY 100

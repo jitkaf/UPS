@@ -162,6 +162,7 @@ int zpracovavac_zprav_registrace(int fd, struct s_zprava * p_zprava) {
            strcpy((GLOBAL_klienti + id)->jmeno_hrace, p_zprava->druha_cast);
             strcpy((GLOBAL_klienti + id)->heslo, p_zprava->treti_cast);
             (GLOBAL_klienti + id)->stav_stavoveho_diagramu = 1;
+            (GLOBAL_klienti + id)->stav_pred_odpojenim = 1;
             tcp_server_send_message(fd, "0|0");
         }
     }
@@ -178,9 +179,15 @@ int zpracovavac_zprav_znovu_prihlaseni(int fd, struct s_zprava *p_zprava) {
     }
     if (strcmp(p_zprava->treti_cast, (GLOBAL_klienti + id)->heslo) == 0) {
         if ((GLOBAL_klienti + id)->stav_stavoveho_diagramu == 5){
-            (GLOBAL_klienti + id)->stav_stavoveho_diagramu = 1;
+            (GLOBAL_klienti + id)->stav_stavoveho_diagramu = (GLOBAL_klienti + id)->stav_pred_odpojenim;
             (GLOBAL_klienti + id)->pocet_vadnych_zprav = 0;
-            tcp_server_send_message(fd, "1|0"); //ze je ok zaregistrovanej
+             if (((GLOBAL_klienti + id)->stav_stavoveho_diagramu == 3)|| ((GLOBAL_klienti + id)->stav_stavoveho_diagramu == 2)){
+                  tcp_server_send_message(fd, "1|2");
+             }
+             else{
+                 tcp_server_send_message(fd, "1|0");
+             }
+             //ze je ok prihlasenej a nhraje
         }
         else{
             tcp_server_send_message(fd, "1|3");
@@ -274,8 +281,7 @@ int zpracovavac_zprav_odpoj(int fd, struct s_zprava *p_zprava, fd_set *client_so
     }
     if (strcmp(p_zprava->druha_cast, "1") == 0) {
         (GLOBAL_klienti + id)->pocet_vadnych_zprav = 0;
-        (GLOBAL_klienti + id)->stav_stavoveho_diagramu = 5;
-
+       
         tcp_server_send_message(fd, "4|0");
         klienti_odhlas_klienta(id, fd, client_socks);
     }
