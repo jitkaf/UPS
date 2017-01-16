@@ -30,7 +30,7 @@ public class Start extends VBox {
         this.setPadding(new Insets(20,30,20,30));
        
         
-        startuj = new Button("Začít hrát");
+        startuj = new Button("Start");
         odhlasit = new Button ("Odhlásit");
         ukoncit = new Button ("Zapomenout");
         this.getChildren().addAll(getHorni(), getStred(), getSpodek(), getPodpis());

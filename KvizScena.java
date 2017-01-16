@@ -6,7 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
-import logika.ProstrednikPoslat;
+import data.Prostrednik;
 
 /**
  *
@@ -16,14 +16,13 @@ public class KvizScena extends Scene implements IPohled {
 
     private final StavitelObsahuOkna stavitel;
     private final BorderPane layout;
-    private final ProstrednikPoslat prostrednik;
+    private final Prostrednik prostrednik;
 
-    public KvizScena(ProstrednikPoslat prostrednik) {
+    public KvizScena(Prostrednik prostrednik) {
         super(new BorderPane(new Button("Karel karluje")));
         this.layout = (BorderPane) this.getRoot();
         this.layout.prefWidthProperty().bind(this.widthProperty());
         this.layout.prefHeightProperty().bind(this.heightProperty());
-        //this.layout.setBackground(new Background(new BackgroundFill(Color.PURPLE, CornerRadii.EMPTY, Insets.EMPTY)));
         this.stavitel = new StavitelObsahuOkna(prostrednik);
         this.prostrednik = prostrednik;
 
@@ -32,19 +31,22 @@ public class KvizScena extends Scene implements IPohled {
     private void setObsah(Parent obsah) {
         this.layout.setCenter(obsah);
     }
+    
+    private void hetObsah() {
+        this.layout.getCenter();
+    }
 
     @Override
     public void prepniSe(int idPohled) {
         Platform.runLater(() -> {
-            System.out.println("Jsem v prepni se idpohled je: " + idPohled);
             switch (idPohled) {
-                
+
                 case IPohled.PRIPOJENI:
                     this.setObsah(stavitel.getPripojovatko(0));
                     break;
                 case IPohled.PRIPOJENI_ZNOVU:
                     this.setObsah(stavitel.getPripojovatko(1));
-                    break;  
+                    break;
                 case IPohled.PRIPOJENI_CHYBA_PORTU:
                     this.setObsah(stavitel.getPripojovatko(2));
                     break;
@@ -59,7 +61,7 @@ public class KvizScena extends Scene implements IPohled {
                     break;
                 case IPohled.PRIHLASENI_HESLO:
                     this.setObsah(stavitel.getPrihlasovatko(2));
-                    break;    
+                    break;
                 case IPohled.PRIHLASENI_JMENO:
                     this.setObsah(stavitel.getPrihlasovatko(1));
                     break;
@@ -67,19 +69,21 @@ public class KvizScena extends Scene implements IPohled {
                     this.setObsah(stavitel.getStart());
                     break;
                 case IPohled.HRA_CEKANI:
+                    System.out.println("hra cekani preppni");
                     this.setObsah(stavitel.getHraCekani());
+                     System.out.println("hra cekani preppni konec");
                     break;
                 case IPohled.HRA_OTAZKA:
+                    System.err.println("hra otazka preppni");
                     this.setObsah(stavitel.getHraOtazka());
+                     System.err.println("hra otazka preppni konec");
                     break;
                 case IPohled.HRA_VYHODNOCENI:
-                    System.out.println("jdu do vyhodnoceni");
-                    this.setObsah(stavitel.getHraVyhodnoceni());
+                     this.setObsah(stavitel.getHraVyhodnoceni());
                     break;
-                    
-                //  case IPohled.KONEC_HRY: this.layout.setCenter(...); break;
-                default:
-                    System.err.println("Nezname id pohledu: " + idPohled);
+
+                 default:
+                    System.err.println("Neznáme id pohledu: " + idPohled);
                     break;
             }
         });

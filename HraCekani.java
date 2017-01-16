@@ -21,50 +21,47 @@ import javafx.scene.text.Text;
  *
  * @author jitka
  */
-public class HraCekani extends VBox{
-    
-     
+public class HraCekani extends VBox {
 
     public final Button odhlasit;
     public final Button ukoncit;
 
-    public HraCekani(){
+    public HraCekani() {
         this.setSpacing(25);
-        this.setPadding(new Insets(30,40,20,40));
-        
-        odhlasit = new Button ("Odhlásit");
-        ukoncit = new Button ("Ukončit");
+        this.setPadding(new Insets(30, 40, 20, 40));
+
+        odhlasit = new Button("Odhlásit");
+        ukoncit = new Button("Zapomenout");
         this.getChildren().addAll(getHorni(), getStred(), getSpodek(), getPodpis());
     }
 
-
-    private Node getHorni(){
+    private Node getHorni() {
         Text a = new Text("             DuelKvíz");
         a.setFont(javafx.scene.text.Font.font(30));
         a.setFill(Color.BLUE);
-       
+
         return a;
     }
 
-    private Node getStred(){
-        Label text = new Label("    Hrajete hru DuelKvíz, která Vám přináší velké potěšení. \n \n    Nyní je potřeba chvililinkuku počkat na odevzvu serveru \n    nebo přihlášení soupeře. \n \n"
+    private Node getStred() {
+        Label text = new Label("    Hrajete hru DuelKvíz, která Vám přináší velké potěšení. \n \n    Nyní je potřeba chvililinku počkat na odevzvu serveru \n    nebo přihlášení soupeře. \n \n"
                 + "    V tomto čase se mužete zamyslet nad svým životem.");
-        
+
         return text;
     }
-    
-    private Node getSpodek(){
-           HBox tlacitka = new HBox();
-           tlacitka.setPadding(new Insets(50));
-           tlacitka.setSpacing(80);
-           odhlasit.setMinSize(100, 40);
-           ukoncit.setMinSize(100,40);
-           tlacitka.getChildren().addAll(odhlasit,ukoncit);
-           return tlacitka;
+
+    private Node getSpodek() {
+        HBox tlacitka = new HBox();
+        tlacitka.setPadding(new Insets(50));
+        tlacitka.setSpacing(80);
+        odhlasit.setMinSize(100, 40);
+        ukoncit.setMinSize(100, 40);
+        tlacitka.getChildren().addAll(odhlasit, ukoncit);
+        return tlacitka;
 
     }
-    
-    private Node getPodpis(){
+
+    private Node getPodpis() {
         Label l = new Label("    Tato hra je vyvíjena jako semestrální práce KIV/UPS. \n\n                        @Jitka Fürbacherová");
         return l;
     }

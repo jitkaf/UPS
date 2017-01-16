@@ -27,6 +27,7 @@ public interface IPohled {
   public static final int HRA_CEKANI = 4;
   public static final int HRA_OTAZKA = 3;
   public static final int HRA_VYHODNOCENI = 5;
+
   
   public void prepniSe(int idPohled);
 }

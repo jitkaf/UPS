@@ -3,45 +3,46 @@ package komunikace;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.time.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import logika.ProstrednikPoslat;
+import data.Prostrednik;
 import uzivatelskeRozhrani.IPohled;
 
+/**
+ * Stará se o přijímání zpráv od serveru a následné rozparsování.
+ * @author jitka
+ */
 public class TcpPrijmac extends Thread {
 
     public LocalTime aktualni, odeslano;
     Socket socket;
     static BufferedReader bfr;
-    ProstrednikPoslat prostrednikPos;
+    Prostrednik prostrednikPos;
 
-    public TcpPrijmac(Socket socket, int bufferSize, ProstrednikPoslat prostrednikPos) {
+    /**
+     * Nastaví potřebné parametry.
+     * @param socket
+     * @param bufferSize
+     * @param prostrednikPos 
+     */
+    public TcpPrijmac(Socket socket, int bufferSize, Prostrednik prostrednikPos) {
         this.socket = socket;
         this.prostrednikPos = prostrednikPos;
-        System.out.println("ted");
-    }
+     }
 
     @Override
     public void run() {
-        System.out.println("jedu");
         while (true) {
-            System.out.println("druhe");
-
-            // System.out.println("cekamNaZpracvu");
-            try {
+           try {
                 bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 String message = bfr.readLine();
                 if (message == null) {
                     System.err.println("Stream byl ukončen.");
-                    this.prostrednikPos.getPohled().prepniSe(IPohled.PRIPOJENI_ZNOVU);
+                    System.exit(0);
                     break;
                 }
                 if (message.length() > 0) {
-
-                    System.out.println("Message Received: " + message);
+                    System.out.println("Obdržena zpráva: " + message);
                     zpracujZpravu(message);
                 }
             } catch (IOException e) {
@@ -55,7 +56,6 @@ public class TcpPrijmac extends Thread {
     public int zpracujZpravu(String zprava) {
         String[] casti = zprava.split("\\|");
         int delka = casti.length;
-        System.out.println("budu zpracovavat zpravy: " + delka);
         if (casti[0].length() < 1) {
             return -1;
         } 
@@ -71,6 +71,7 @@ public class TcpPrijmac extends Thread {
         }
         else if(casti[0].charAt(0)== '2'){
             //prejde na cekani na otazku
+            System.out.println("prijata dvojka cekani na zacatek hry");
            this.prostrednikPos.getPohled().prepniSe(IPohled.HRA_CEKANI);
         }
         else if(casti[0].charAt(0) == '5'){
@@ -83,9 +84,25 @@ public class TcpPrijmac extends Thread {
                 zpracujOtazku(casti[1], casti[2], casti[3], casti[4]);
             }
         }
+        else if (casti[0].charAt(0) == '9'){
+            System.out.println("Chyba");
+        }
+        else if(casti[0].charAt(0) == '6'){
+            //prihlasei ok
+        }
+        else {
+            System.err.println("Detekovano pochybne chovani serveru. Aplikace bude ukončena");
+            System.exit(0);
+                    
+        }
         return 0;
     }
 
+    /**
+     * Zpracuje odpověď serveru na pokus o přihlášení.
+     * @param s
+     * @return 
+     */
     public int vyhodnoceniPrihlaseni(String s) {
         System.out.println("jsem vy vyhodnot: " + s  +   " : "+ s.charAt(0));
         if ((s.length() < 1)/* || (prostrednikPos.getStavStavovehoDiagramu() != 0)*/) { //zde taky osetrovat ze je neprihlasen jeste
@@ -110,7 +127,11 @@ public class TcpPrijmac extends Thread {
         return 0;
     }
     
-    
+    /**
+     * Vyhodnoti znovu pripojeni
+     * @param s
+     * @return 
+     */
     public int vyhodnotZnovuPripojeni(String s) {
         System.out.println("jsem vy vyhodnot: " + s  +   " : "+ s.charAt(0));
         if ((s.length() < 1)/* || (prostrednikPos.getStavStavovehoDiagramu() != 0)*/) { //zde taky osetrovat ze je neprihlasen jeste
@@ -125,6 +146,8 @@ public class TcpPrijmac extends Thread {
             this.prostrednikPos.getPohled().prepniSe(IPohled.PRIHLASENI_JMENO);
         }else if(s.charAt(0) == '2'){
             this.prostrednikPos.getPohled().prepniSe(IPohled.HRA_CEKANI);
+        }else if(s.charAt(0) == '3'){
+            this.prostrednikPos.getPohled().prepniSe(IPohled.PRIHLASENI_DUPLICITA);
         }else{
             System.out.println("prislo neplatne potvrzeni prihlaseni");
         }
@@ -132,8 +155,16 @@ public class TcpPrijmac extends Thread {
     }
     
     
+    /**
+     * Zpracuju otázku
+     * @param otazka
+     * @param a
+     * @param b
+     * @param c 
+     */
     public void zpracujOtazku(String otazka, String a, String b, String c){
         //asi budu muset pouzit nejake zamky nebezpecne je to takhle
+        System.out.println("prijata otazka");
         this.prostrednikPos.setOtazka(otazka);
         this.prostrednikPos.setAcko(a);
         this.prostrednikPos.setBecko(b);
@@ -141,6 +172,10 @@ public class TcpPrijmac extends Thread {
         this.prostrednikPos.getPohled().prepniSe(IPohled.HRA_OTAZKA);
     }
     
+    /**
+     * Zpracuje výsledky
+     * @param vysledek 
+     */
     private void zpracujVysledky(String vysledek){
         System.out.println("Zpracuj vysledky " + vysledek);
         if(vysledek.charAt(0) == '0'){

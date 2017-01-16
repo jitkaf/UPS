@@ -24,58 +24,55 @@ public class Prihlasovatko extends VBox {
     private TextArea heslo = new TextArea();
     private TextArea vysledek = new TextArea();
     private int opakovani;
-    
+
     public final Button prihlasit;
     public final Button registrovat;
     public final Button konec;
+
     public Prihlasovatko(int opakovani) {
-        this.opakovani= opakovani;
+        this.opakovani = opakovani;
         this.setSpacing(20);
         this.setPadding(new Insets(10));
-        
-        
+
         vysledek.setPrefColumnCount(10);
         vysledek.setPrefRowCount(25);
         //nastaví preferované hodnoty počtu řádků a sloupců
-        
-        if(opakovani ==1 ){
-            vysledek.setText("Zadali jste nesprávné přihlašovací údaje. \nJméno smí obsahovat pouze alfanumerické znaky a nemsí být prázdné."
+
+        if (opakovani == 1) {
+            vysledek.setText("Zadali jste nesprávné přihlašovací údaje. \nJméno smí obsahovat pouze alfanumerické znaky a nesmí být prázdné."
                     + "\nPokud zadáte více než 20 znaků, budou nadbytečné znaky ignorovány.");
-        }
-        else if(opakovani==2){
-            vysledek.setText("Zadali jste nesprávné přihlašovací údaje. \nHeslo smí obsahovat pouze alfanumerické znaky a nemsí být prázdné."
+        } else if (opakovani == 2) {
+            vysledek.setText("Zadali jste nesprávné přihlašovací údaje. \nHeslo smí obsahovat pouze alfanumerické znaky a nesmí být prázdné."
                     + "\nPokud zadáte více než 20 znaků, budou nadbytečné znaky ignorovány.");
-        }
-        else if(opakovani == 3){
+        } else if (opakovani == 3) {
             vysledek.setText("Toto jméno je již obsazeno. Zadejte jiné jméno. \n"
                     + "Pokud zadáte více než 20 znaků, budou nadbytečné znaky ignorovány.");
-        }
-        else{
+        } else {
             vysledek.setText("Pokud zadáte více než 20 znaků, budou nadbytečné znaky ignorovány.");
         }
         vysledek.setEditable(false);
         prihlasit = new Button("Přihlásit");
         registrovat = new Button("Registrovat");
-        konec = new Button(" Konec  ");
-       
+        konec = new Button("Zapomenout");
+
         this.getChildren().addAll(getJmenoCast(), getHesloCast(), getTlacitka(), vysledek);
     }
 
-    public Node getJmenoCast(){
+    public Node getJmenoCast() {
         HBox box = new HBox();
         Label popisek = new Label("Zadejte jmeno(max 20 znaků): ");
         jmeno.setPrefColumnCount(10);
         jmeno.setPrefRowCount(25);
         jmeno.setMinSize(150, 30);
-        jmeno.setMaxSize(200,40);
+        jmeno.setMaxSize(200, 40);
         box.setSpacing(50);
         box.setPadding(new Insets(20));
         box.getChildren().addAll(popisek, jmeno);
         return box;
-        
+
     }
-    
-     private Node getHesloCast(){
+
+    private Node getHesloCast() {
         HBox box = new HBox();
         Label popisek = new Label("Zadejte heslo(max 20 znaků): ");
         heslo.setPrefColumnCount(10);
@@ -86,10 +83,10 @@ public class Prihlasovatko extends VBox {
         box.setPadding(new Insets(20));
         box.getChildren().addAll(popisek, heslo);
         return box;
-        
+
     }
-     
-     private Node getTlacitka(){
+
+    private Node getTlacitka() {
         HBox box = new HBox();
         box.setSpacing(50);
         box.setPadding(new Insets(30));
@@ -98,18 +95,18 @@ public class Prihlasovatko extends VBox {
         konec.setMinSize(100, 40);
         box.getChildren().addAll(prihlasit, registrovat, konec);
         return box;
-         
-     }
-     
+
+    }
+
     public String getJmeno() {
         return this.jmeno.getText();
     }
-    
-    public String getHeslo(){
+
+    public String getHeslo() {
         return this.heslo.getText();
     }
-    
-    public void setVysledek(String vysledek){
+
+    public void setVysledek(String vysledek) {
         this.vysledek.setText(vysledek);
     }
 }

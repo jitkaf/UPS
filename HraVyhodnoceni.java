@@ -5,7 +5,6 @@
  */
 package uzivatelskeRozhrani.obsahyOkna;
 
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -24,63 +23,59 @@ import javafx.scene.text.Text;
  * @author jitka
  */
 public class HraVyhodnoceni extends VBox {
-   
-    
+
     public final Button odhlasit;
     public final Button ukoncit;
     public final Button start;
-    
-    public HraVyhodnoceni(int vysledek){
+
+    public HraVyhodnoceni(int vysledek) {
         this.setSpacing(60);
-        this.setPadding(new Insets(60,40,70,40));
-        odhlasit = new Button ("Odhlásit");
-        ukoncit = new Button ("Ukončit");
-        start = new Button ("Hrát znovu");
-        this.getChildren().addAll(getHorni(),getStred(vysledek), getSpodek(), getPodpis());
+        this.setPadding(new Insets(60, 40, 70, 40));
+        odhlasit = new Button("Odhlásit");
+        ukoncit = new Button("Zapomenout");
+        start = new Button("Hrát znovu");
+        this.getChildren().addAll(getHorni(), getStred(vysledek), getSpodek(), getPodpis());
     }
-    
-    private Node getHorni(){
+
+    private Node getHorni() {
         Text a = new Text("           DuelKvíz");
         a.setFont(javafx.scene.text.Font.font(35));
         a.setFill(Color.BLUE);
-       
+
         return a;
     }
-    
-    
-    public Node getStred(int vysledek){
+
+    public Node getStred(int vysledek) {
         Text text = new Text();
-       if (vysledek ==1 ){
-           text.setText("       Vyhrál jste!");
-           text.setFont(Font.font ("Verdana", 40));
-           text.setFill(Color.GREEN);
-       }
-       else if(vysledek ==2){
+        if (vysledek == 1) {
+            text.setText("       Vyhrál jste!");
+            text.setFont(Font.font("Verdana", 40));
+            text.setFill(Color.GREEN);
+        } else if (vysledek == 2) {
             text.setText("Bohužel jste prohrál :( .");
-            text.setFont(Font.font ("Verdana", 40));
+            text.setFont(Font.font("Verdana", 40));
             text.setFill(Color.RED);
-       }
-       else if(vysledek == 0){
+        } else if (vysledek == 0) {
             text.setText("      Remíza! ");
-            text.setFont(Font.font ("Verdana", 50));
+            text.setFont(Font.font("Verdana", 50));
             text.setFill(Color.ORANGE);
-       }
-               
-       return text;
-    }          
-    
-    private Node getSpodek(){
-           HBox tlacitka = new HBox();
-           tlacitka.setSpacing(50);
-           odhlasit.setMinSize(100, 40);
-           ukoncit.setMinSize(100,40);
-           start.setMinSize(100,40);
-           tlacitka.getChildren().addAll(odhlasit,start, ukoncit);
-           return tlacitka;
+        }
+
+        return text;
+    }
+
+    private Node getSpodek() {
+        HBox tlacitka = new HBox();
+        tlacitka.setSpacing(50);
+        odhlasit.setMinSize(100, 40);
+        ukoncit.setMinSize(100, 40);
+        start.setMinSize(100, 40);
+        tlacitka.getChildren().addAll(odhlasit, start, ukoncit);
+        return tlacitka;
 
     }
-    
-      private Node getPodpis(){
+
+    private Node getPodpis() {
         Label l = new Label("    Tato hra je vyvíjena jako semestrální práce KIV/UPS. \n\n                        @Jitka Fürbacherová");
         return l;
     }
